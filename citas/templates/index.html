@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Isidro Ayora</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <!-- Encabezado -->
+    <header class="header">
+        <div class="top-bar">
+            <a href="{% url 'login' %}" class="login"> INICIAR SESIÓN</a>
+            <div class="social-icons">
+                <img src="{% static '/imagenes/facebook.jpg' %}" alt="Facebook">
+                <img src="{% static '/imagenes/twitter.jpg' %}" alt="Twitter">
+                <img src="{% static '/imagenes/instagram.jpg' %}" alt="Instagram">
+                <img src="{% static '/imagenes/youtube.jpg' %}" alt="YouTube">
+            </div>
+        </div>
+        <div class="logo-container">
+            <img src="{% static '/imagenes/logo.jpg' %}" alt="Logo Hospital" class="hospital-logo">
+            <h1>HOSPITAL ISIDRO AYORA</h1>
+        </div>
+        <!-- Menú de navegación -->
+        <nav class="nav-bar">
+            <a href="#" onclick="showMessage('Medicina Interna')">MEDICINA INTERNA</a>
+            <a href="#" onclick="showMessage('Pediatría')">PEDIATRÍA</a>
+            <a href="#" onclick="showMessage('Endocrinología')">ENDOCRINOLOGÍA</a>
+            <a href="#" onclick="showMessage('Ginecología')">GINECOLOGÍA</a>
+        </nav>
+    </header>
+
+    <!-- Sección de mensajes -->
+    <section id="specialty-message" class="hidden">
+        <p id="message-text"></p>
+    </section>
+
+    <script>
+        function showMessage(specialty) {
+            const messages = {
+                "Medicina Interna": "Medicina Interna se enfoca en el diagnóstico, tratamiento y prevención de enfermedades en adultos. Esta especialidad cubre una amplia gama de trastornos que afectan los órganos internos, como el corazón, los pulmones, el hígado y los riñones. Los médicos internistas se especializan en el manejo de enfermedades crónicas como la hipertensión, la diabetes, el colesterol elevado, las infecciones y otros problemas complejos que requieren atención continua.",
+                "Pediatría": "Pediatría es la rama de la medicina que se encarga de la salud de los niños desde el nacimiento hasta la adolescencia. Los pediatras diagnostican y tratan enfermedades y trastornos que afectan el desarrollo físico, emocional y social de los niños. Además, realizan controles de salud, vacunas y seguimiento del crecimiento para asegurar el bienestar general de los pequeños durante su desarrollo.",
+                "Endocrinología": "Endocrinología es la especialidad médica que se ocupa de las glándulas y hormonas del cuerpo humano. Los endocrinólogos diagnostican y tratan trastornos relacionados con el sistema endocrino, como la diabetes, trastornos de tiroides, problemas de fertilidad, obesidad, osteoporosis, entre otros. Esta especialidad juega un papel crucial en el tratamiento de enfermedades crónicas que afectan la regulación hormonal y el metabolismo.",
+                "Ginecología": "Ginecología es la especialidad médica que se centra en la salud reproductiva femenina. Los ginecólogos diagnostican y tratan una variedad de condiciones relacionadas con los órganos reproductivos de la mujer, como el útero, los ovarios, las trompas de Falopio y la vagina. Además, realizan exámenes de prevención, control del embarazo, parto, menopausia, y manejan afecciones como el cáncer ginecológico, infecciones y trastornos hormonales."
+            };
+            document.getElementById('message-text').innerText = messages[specialty];
+            document.getElementById('specialty-message').classList.remove('hidden');
+        }
+    </script>
+
+    <!-- Contenido Principal -->
+    <main>
+        <section class="mision-vision">
+            <div class="mision">
+                <h2>MISIÓN</h2>
+                <p>Ofrecer servicios de excelencia en el campo médico, con la más avanzada tecnología, para lograr la satisfacción total de nuestros clientes.</p>
+                <img src="{% static '/imagenes/mision.jpg' %}" alt="Misión">
+            </div>
+            <div class="vision">
+                <h2>VISIÓN</h2>
+                <p>Ser una institución conocida y respetada por su compromiso continuo con la excelencia.</p>
+                <img src="{% static '/imagenes/vision.jpg' %}" alt="Visión">
+            </div>
+        </section>
+
+        <!-- Botón Programar Cita -->
+        <div class="programar-cita">
+            <button>Programar cita</button>
+        </div>
+
+        <!-- Objetivos -->
+        <section class="objetivos">
+            <h2>Objetivos</h2>
+            <p>Servir a nuestros clientes con honestidad, integridad y calor humano. Ofrecer servicios de excelencia, de forma rápida y eficiente.</p>
+            <p>Trabajar en equipo, con entusiasmo y dedicación.</p>
+            <p>Dar siempre el máximo para cumplir nuestro compromiso con la excelencia.</p>
+        </section>
+    </main>
+
+    <!-- Pie de página -->
+    <footer>
+        <div class="footer-content">
+            <p>2024. Hospital Isidro Ayora<br>
+            Av. Universitaria entre Manuel Monteros y Juan José Samaniego<br>
+            Tel: (07) 257-0540</p>
+            <p>Derechos de autor. 2024. Universidad Técnica Particular de Loja</p>
+        </div>
+    </footer>
+</body>
+</html>

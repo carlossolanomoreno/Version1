@@ -1,0 +1,140 @@
+/* --- Estilos Generales --- */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #e6f7ff; /* Fondo azul claro */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    color: #333;
+}
+
+/* --- Enlace para regresar con logo --- */
+.back-link {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #66c3ff; /* Fondo azul intermedio */
+    padding: 10px 20px;
+    border-radius: 5px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+}
+
+.back-link .logo {
+    width: 40px;
+    height: auto;
+}
+
+.back-link .regresar {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.back-link .regresar:hover {
+    text-decoration: underline;
+}
+
+/* --- Caja de Login --- */
+.login-box {
+    width: 100%;
+    max-width: 400px;
+    background-color: #ffffff; /* Fondo blanco */
+    padding: 20px 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.login-box h1 {
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+    color: #0078D7; /* Azul principal */
+}
+
+/* --- Estilos de los campos de entrada --- */
+.input-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.input-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #0078D7; /* Azul principal */
+}
+
+.input-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+.input-group input:focus {
+    outline: none;
+    border: 1px solid #0078D7; /* Borde azul al enfocar */
+    box-shadow: 0 0 5px #66c3ff;
+}
+
+/* --- Botón de Ingresar --- */
+.btn-ingresar {
+    width: 100%;
+    padding: 10px;
+    background-color: #0078D7; /* Azul principal */
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: background-color 0.3s ease;
+}
+
+.btn-ingresar:hover {
+    background-color: #005fa3; /* Azul oscuro */
+}
+
+/* --- Opciones debajo del formulario --- */
+.options {
+    margin-top: 15px;
+    font-size: 0.9rem;
+}
+
+.options a {
+    color: #0078D7;
+    text-decoration: none;
+    margin: 0 10px;
+    font-weight: bold;
+}
+
+.options a:hover {
+    text-decoration: underline;
+}
+
+/* --- Responsivo para dispositivos pequeños --- */
+@media (max-width: 600px) {
+    .login-box {
+        padding: 15px 20px;
+    }
+
+    .back-link {
+        top: 10px;
+        left: 10px;
+        padding: 8px 15px;
+    }
+}
+
+

@@ -1,0 +1,91 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f7f7f7;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-width: 600px; /* Ancho del formulario */
+    width: 100%;
+    text-align: center;
+}
+
+.back-link {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    text-decoration: none;
+    color: blue;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+.back-icon {
+    width: 16px;
+    height: 16px;
+    margin-right: 5px;
+}
+
+.logo img {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 8px;
+}
+
+h1 {
+    font-size: 1em;
+    color: #001870;
+    margin-bottom: 15px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Dos columnas iguales */
+    gap: 10px; /* Espacio entre las columnas */
+    align-items: center;
+}
+
+label {
+    font-weight: bold;
+    color: #001870;
+    font-size: 0.9em;
+}
+
+input {
+    padding: 8px;
+    border: 1px solid #d9d9d9;
+    border-radius: 5px;
+    background-color: #b3e5fc;
+    font-size: 0.9em;
+}
+
+button {
+    background-color: #b3e5fc;
+    color: #001870;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 0.9em;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:hover {
+    background-color: #82cfff;
+}
+
