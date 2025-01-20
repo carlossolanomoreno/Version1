@@ -5,13 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hospital Isidro Ayora</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
 </head>
 <body>
     <!-- Encabezado -->
     <header class="header">
         <div class="top-bar">
-            <a href="{% url 'login' %}" class="login"> INICIAR SESIÓN</a>
+            <a href="{% url 'login_paciente' %}" class="login"> INICIAR SESIÓN</a>
             <div class="social-icons">
                 <img src="{% static '/imagenes/facebook.jpg' %}" alt="Facebook">
                 <img src="{% static '/imagenes/twitter.jpg' %}" alt="Twitter">
@@ -37,19 +37,6 @@
         <p id="message-text"></p>
     </section>
 
-    <script>
-        function showMessage(specialty) {
-            const messages = {
-                "Medicina Interna": "Medicina Interna se enfoca en el diagnóstico, tratamiento y prevención de enfermedades en adultos. Esta especialidad cubre una amplia gama de trastornos que afectan los órganos internos, como el corazón, los pulmones, el hígado y los riñones. Los médicos internistas se especializan en el manejo de enfermedades crónicas como la hipertensión, la diabetes, el colesterol elevado, las infecciones y otros problemas complejos que requieren atención continua.",
-                "Pediatría": "Pediatría es la rama de la medicina que se encarga de la salud de los niños desde el nacimiento hasta la adolescencia. Los pediatras diagnostican y tratan enfermedades y trastornos que afectan el desarrollo físico, emocional y social de los niños. Además, realizan controles de salud, vacunas y seguimiento del crecimiento para asegurar el bienestar general de los pequeños durante su desarrollo.",
-                "Endocrinología": "Endocrinología es la especialidad médica que se ocupa de las glándulas y hormonas del cuerpo humano. Los endocrinólogos diagnostican y tratan trastornos relacionados con el sistema endocrino, como la diabetes, trastornos de tiroides, problemas de fertilidad, obesidad, osteoporosis, entre otros. Esta especialidad juega un papel crucial en el tratamiento de enfermedades crónicas que afectan la regulación hormonal y el metabolismo.",
-                "Ginecología": "Ginecología es la especialidad médica que se centra en la salud reproductiva femenina. Los ginecólogos diagnostican y tratan una variedad de condiciones relacionadas con los órganos reproductivos de la mujer, como el útero, los ovarios, las trompas de Falopio y la vagina. Además, realizan exámenes de prevención, control del embarazo, parto, menopausia, y manejan afecciones como el cáncer ginecológico, infecciones y trastornos hormonales."
-            };
-            document.getElementById('message-text').innerText = messages[specialty];
-            document.getElementById('specialty-message').classList.remove('hidden');
-        }
-    </script>
-
     <!-- Contenido Principal -->
     <main>
         <section class="mision-vision">
@@ -67,7 +54,7 @@
 
         <!-- Botón Programar Cita -->
         <div class="programar-cita">
-            <button>Programar cita</button>
+            <a href="{% url 'login_paciente' %}" class="btn-blue">Programar cita</a>
         </div>
 
         <!-- Objetivos -->
@@ -88,5 +75,30 @@
             <p>Derechos de autor. 2024. Universidad Técnica Particular de Loja</p>
         </div>
     </footer>
+
+    <script>
+        function showMessage(specialty) {
+            const messages = {
+                "Medicina Interna": "Medicina Interna se enfoca en el diagnóstico, tratamiento y prevención de enfermedades en adultos. Esta especialidad cubre una amplia gama de trastornos que afectan los órganos internos, como el corazón, los pulmones, el hígado y los riñones. Los médicos internistas se especializan en el manejo de enfermedades crónicas como la hipertensión, la diabetes, el colesterol elevado, las infecciones y otros problemas complejos que requieren atención continua.",
+                "Pediatría": "Pediatría es la rama de la medicina que se encarga de la salud de los niños desde el nacimiento hasta la adolescencia. Los pediatras diagnostican y tratan enfermedades y trastornos que afectan el desarrollo físico, emocional y social de los niños. Además, realizan controles de salud, vacunas y seguimiento del crecimiento para asegurar el bienestar general de los pequeños durante su desarrollo.",
+                "Endocrinología": "Endocrinología es la especialidad médica que se ocupa de las glándulas y hormonas del cuerpo humano. Los endocrinólogos diagnostican y tratan trastornos relacionados con el sistema endocrino, como la diabetes, trastornos de tiroides, problemas de fertilidad, obesidad, osteoporosis, entre otros. Esta especialidad juega un papel crucial en el tratamiento de enfermedades crónicas que afectan la regulación hormonal y el metabolismo.",
+                "Ginecología": "Ginecología es la especialidad médica que se centra en la salud reproductiva femenina. Los ginecólogos diagnostican y tratan una variedad de condiciones relacionadas con los órganos reproductivos de la mujer, como el útero, los ovarios, las trompas de Falopio y la vagina. Además, realizan exámenes de prevención, control del embarazo, parto, menopausia, y manejan afecciones como el cáncer ginecológico, infecciones y trastornos hormonales."
+            };
+            const messageText = document.getElementById('message-text');
+            const messageContainer = document.getElementById('specialty-message');
+            messageText.innerText = messages[specialty];
+            messageContainer.classList.remove('hidden');
+            messageContainer.classList.add('visible');
+    
+            // Ocultar el mensaje después de 10 segundos
+            setTimeout(() => {
+                messageContainer.classList.remove('visible');
+                messageContainer.classList.add('hidden');
+            }, 10000); // 10 segundos
+        }
+    </script>
+    
 </body>
 </html>
+
+

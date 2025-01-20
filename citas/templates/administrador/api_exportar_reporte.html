@@ -1,0 +1,23 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+<h1>Exportar Reporte</h1>
+
+<p>Selecciona el formato para exportar el reporte:</p>
+
+<!-- Formulario para exportar el reporte en formato PDF -->
+<form action="{% url 'api_exportar_reporte' formato='pdf' %}" method="get">
+    <button type="submit" class="btn btn-primary">Exportar Reporte en PDF</button>
+</form>
+
+<!-- Formulario para exportar el reporte en formato CSV -->
+<form action="{% url 'api_exportar_reporte' formato='csv' %}" method="get">
+    <button type="submit" class="btn btn-success">Exportar Reporte en CSV</button>
+</form>
+
+<!-- Formulario para exportar el reporte en formato Excel -->
+<form action="{% url 'api_exportar_reporte' formato='xlsx' %}" method="get">
+    <button type="submit" class="btn btn-warning">Exportar Reporte en Excel</button>
+</form>
+
+{% endblock %}

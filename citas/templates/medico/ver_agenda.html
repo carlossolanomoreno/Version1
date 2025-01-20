@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda</title>
+</head>
+<body>
+    <h1>Agenda de Citas</h1>
+    <ul>
+        {% for cita in citas_pendientes %}
+        <li>
+            <strong>Fecha:</strong> {{ cita.fecha_cita }} <br>
+            <strong>Paciente:</strong> {{ cita.paciente.usuario.nombres }} {{ cita.paciente.usuario.apellidos }} <br>
+            <strong>Estado:</strong> {{ cita.estado }}
+        </li>
+        {% empty %}
+        <li>No tienes citas pendientes.</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'dashboard_medico' %}">Volver al Dashboard</a>
+</body>
+</html>

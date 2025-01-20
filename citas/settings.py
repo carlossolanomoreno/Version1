@@ -11,30 +11,30 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
 from decouple import config
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# Cargar las variables de entorno desde el archivo .env
+load_dotenv()
+
+TELEGRAM_BOT_TOKEN = os.getenv('7093012736:AAGS8s1eyorkNMY9YdV-if4g1raox8HjEzQ')
+
 BASE_DIR = Path(__file__).resolve().parent.parent
+AUTH_USER_MODEL = 'citas.Usuario'
+# Variables del entorno
 
+LOGIN_URL = '/login/'
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,localhost').split(',')
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-43pi(*q$245vrn2ki5l4!e)s(mz+@crz1s!@sa=ip+o4v3x%m)'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
-MEDIA_ROOT = '/media/'
-
+APPEND_SLASH = True
 
 # Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
-    'django.contrib.auth',
+    'django.contrib.auth',                        
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -60,7 +60,7 @@ ROOT_URLCONF = 'citas.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -79,10 +79,12 @@ WSGI_APPLICATION = 'citas.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# Usar variables de entorno en la configuración
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-default-key')
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'app01bd',
+        'NAME': 'app02bd',
         'USER': 'root',
         'PASSWORD': '',
         'HOST': '127.0.0.1',
@@ -91,12 +93,6 @@ DATABASES = {
     }
 }
 
-# Configuración de Telegram
-
-TELEGRAM_BOT_TOKEN = config('7093012736:AAGS8s1eyorkNMY9YdV-if4g1raox8HjEzQ')
-TELEGRAM_CHAT_ID = config('TELEGRAM_CHAT_ID')
-
-# Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -131,8 +127,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 DEBUG = True
-STATIC_URL = '/static/CSS/'
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
+
+# Media files configuration
+MMEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 # Default primary key field type
@@ -141,13 +141,28 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-#cors authotization
+#cors configuration
 CORS_ALLOWED_ORIGINS = []
+
 
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS":"rest_framework.schemas.coreapi.AutoSchema",
 }
 
 
-
-
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/home/'  # Ruta a la página principal tras iniciar sesión
+LOGOUT_REDIRECT_URL = '/login/'  # Ruta tras cerrar sesión
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+}

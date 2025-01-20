@@ -1,0 +1,163 @@
+<!DOCTYPE html> 
+<html>
+<head>
+    <title>Agendar Cita</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        /* General body styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f9fc;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Centered container */
+        .container {
+            background: #ffffff;
+            padding: 20px 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        /* Form header */
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            color: #0056b3;
+            margin-bottom: 20px;
+        }
+
+        /* Form fields */
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #d0d7de;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        input[type="text"]:focus,
+        select:focus {
+            border-color: #0056b3;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 86, 179, 0.2);
+        }
+
+        /* Buttons */
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        button[type="submit"],
+        .back-button {
+            background-color: #0056b3;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            flex: 1;
+            text-align: center;
+        }
+
+        button[type="submit"]:hover,
+        .back-button:hover {
+            background-color: #004494;
+        }
+
+        .back-button {
+            text-decoration: none;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Agendar Cita</h1>
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="button-container">
+                <button type="submit">Agendar</button>
+                <button type="button" class="back-button" onclick="history.back();">Regresar</button>
+            </div>
+        </form>
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#id_especialidad').change(function() {
+                var especialidad_id = $(this).val();
+                if (especialidad_id) {
+                    $.ajax({
+                        url: '/paciente/cargar_medicos/',
+                        data: {
+                            'especialidad_id': especialidad_id
+                        },
+                        success: function(data) {
+                            var medicoSelect = $('#id_medico');
+                            medicoSelect.empty();
+                            if (data.medicos) {
+                                $.each(data.medicos, function(index, medico) {
+                                    medicoSelect.append('<option value="' + medico.id + '">' + medico.nombre + '</option>');
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+
+            $('#id_medico').change(function() {
+                var medico_id = $(this).val();
+                if (medico_id) {
+                    $.ajax({
+                        url: '/paciente/cargar_horarios/',
+                        data: {
+                            'medico_id': medico_id
+                        },
+                        success: function(data) {
+                            var horarioSelect = $('#id_horario_medico');
+                            horarioSelect.empty();
+                            if (data.horarios) {
+                                $.each(data.horarios, function(index, horario) {
+                                    horarioSelect.append('<option value="' + horario.id + '">' + horario.fecha + ' (' + horario.hora_inicio + '-' + horario.hora_fin + ')</option>');
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+
+

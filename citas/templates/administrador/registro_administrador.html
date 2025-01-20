@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Administrador</title>
+    <style>
+        /* General body styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f9fc;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Form container */
+        .form-container {
+            background: #ffffff;
+            padding: 20px 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+        }
+
+        /* Header styling */
+        h2 {
+            text-align: center;
+            font-size: 24px;
+            color: #0056b3;
+            margin-bottom: 20px;
+        }
+
+        /* Form styling */
+        form {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .form-group {
+            width: 48%;
+            margin-bottom: 15px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="number"],
+        input[type="date"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d0d7de;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="password"]:focus,
+        input[type="number"]:focus,
+        input[type="date"]:focus,
+        select:focus {
+            border-color: #0056b3;
+            outline: none;
+            box-shadow: 0 0 5px rgba(0, 86, 179, 0.2);
+        }
+
+        /* Buttons */
+        .form-buttons {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        button {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            flex: 1;
+            margin: 0 5px;
+        }
+
+        button[type="submit"] {
+            background-color: #0056b3;
+            color: white;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #004494;
+        }
+
+        .back-button {
+            background-color: #e0e0e0;
+            color: #333;
+        }
+
+        .back-button:hover {
+            background-color: #d6d6d6;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Registrar Administrador</h2>
+        <form method="POST" action="{% url 'registro_administrador' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_nombre">Nombre</label>
+                <input type="text" id="id_nombre" name="nombre" placeholder="Ingrese su nombre" required>
+            </div>
+            <div class="form-group">
+                <label for="id_apellido">Apellido</label>
+                <input type="text" id="id_apellido" name="apellido" placeholder="Ingrese su apellido" required>
+            </div>
+            <div class="form-group">
+                <label for="id_email">Correo Electrónico</label>
+                <input type="email" id="id_email" name="email" placeholder="Ingrese su correo" required>
+            </div>
+            <div class="form-group">
+                <label for="id_usuario">Nombre de Usuario</label>
+                <input type="text" id="id_usuario" name="usuario" placeholder="Ingrese su nombre de usuario" required>
+            </div>
+            <div class="form-group">
+                <label for="id_password">Contraseña</label>
+                <input type="password" id="id_password" name="password" placeholder="Ingrese su contraseña" required>
+            </div>
+            <div class="form-group">
+                <label for="id_telefono">Teléfono</label>
+                <input type="number" id="id_telefono" name="telefono" placeholder="Ingrese su teléfono" required>
+            </div>
+            <div class="form-group">
+                <label for="id_direccion">Dirección</label>
+                <input type="text" id="id_direccion" name="direccion" placeholder="Ingrese su dirección" required>
+            </div>
+            <div class="form-group">
+                <label for="id_fecha_nacimiento">Fecha de Nacimiento</label>
+                <input type="date" id="id_fecha_nacimiento" name="fecha_nacimiento" required>
+            </div>
+            <div class="form-group">
+                <label for="id_genero">Género</label>
+                <select id="id_genero" name="genero" required>
+                    <option value="masculino">Masculino</option>
+                    <option value="femenino">Femenino</option>
+                    <option value="otro">Otro</option>
+                </select>
+            </div>
+            <div class="form-buttons">
+                <button class="back-button" type="button" onclick="history.back()">Regresar</button>
+                <button type="submit">Registrar</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
+
+
+
+
+

@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="dashboard-header">
+    <div class="dashboard-navbar">
+        <a href="{% url 'inicio' %}" class="btn btn-primary">Regresar al Inicio</a>
+        <a href="{% url 'user_logout' %}" class="btn btn-danger">Cerrar Sesión</a>
+    </div>
+
+    <h1>Bienvenido al Dashboard del Administrador</h1>
+
+    <!-- Mensajes de error -->
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="message {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Sección de Estadísticas -->
+    <div class="dashboard-stats">
+        <h2>Estadísticas Generales</h2>
+        <p><strong>Total de Pacientes:</strong> {{ total_pacientes }}</p>
+        <p><strong>Total de Citas Pendientes:</strong> {{ citas_pendientes }}</p>
+        <p><strong>Total de Citas Finalizadas:</strong> {{ citas_finalizadas }}</p>
+        <p><strong>Promedio de Calificaciones:</strong> {{ promedio_calificacion }}</p>
+    </div>
+
+    <!-- Exportar Estadísticas -->
+    <div class="export-stats">
+        <h3>Exportar Estadísticas</h3>
+        <form method="post" action="{% url 'exportar_estadisticas' %}">
+            {% csrf_token %}
+            <label for="formato">Formato:</label>
+            <select name="formato" id="formato" required>
+                <option value="csv">CSV</option>
+                <option value="xls">Excel</option>
+                <option value="xml">XML</option>
+                <option value="pdf">PDF</option>
+            </select>
+            <button type="submit" class="btn btn-success">Exportar</button>
+        </form>
+    </div>
+
+    <!-- Sección de Acciones Administrativas -->
+    <div class="dashboard-actions">
+        <h2>Acciones Administrativas</h2>
+        <ul>
+            <li><a href="{% url 'generar_reporte' %}">Generar Reporte Estadístico</a></li>
+            <li><a href="{% url 'agendar_citas' %}">Agendar Citas Médicas</a></li>
+            <li><a href="{% url 'registrar_paciente_admin' %}">Registrar Paciente</a></li>
+            <li><a href="{% url 'registro_medico_admin' %}">Registrar Médico</a></li>
+            <li><a href="{% url 'registrar_secretaria_admin' %}">Registrar Secretaria</a></li>
+            
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+

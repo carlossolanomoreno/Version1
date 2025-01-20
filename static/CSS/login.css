@@ -1,140 +1,101 @@
-/* --- Estilos Generales --- */
+/* Estilos globales */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #e6f7ff; /* Fondo azul claro */
+    background-color: #f5f9ff; /* Fondo blanco azulado */
     display: flex;
-    flex-direction: column;
-    align-items: center;
     justify-content: center;
-    min-height: 100vh;
-    color: #333;
-}
-
-/* --- Enlace para regresar con logo --- */
-.back-link {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    display: flex;
     align-items: center;
-    gap: 10px;
-    background-color: #66c3ff; /* Fondo azul intermedio */
-    padding: 10px 20px;
-    border-radius: 5px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    height: 100vh;
+}
+
+/* Botón para regresar al inicio */
+.back-to-index {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+.back-to-index a {
     text-decoration: none;
+    font-size: 14px;
+    color: #004085;
 }
 
-.back-link .logo {
-    width: 40px;
-    height: auto;
-}
-
-.back-link .regresar {
-    color: #fff;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 1rem;
-}
-
-.back-link .regresar:hover {
+.back-to-index a:hover {
     text-decoration: underline;
 }
 
-/* --- Caja de Login --- */
-.login-box {
-    width: 100%;
-    max-width: 400px;
-    background-color: #ffffff; /* Fondo blanco */
-    padding: 20px 30px;
+/* Contenedor del formulario */
+.login-container {
+    background-color: white;
+    padding: 30px;
     border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 400px;
     text-align: center;
 }
 
-.login-box h1 {
+.login-container h1 {
+    color: #004085;
     margin-bottom: 20px;
-    font-size: 1.8rem;
-    color: #0078D7; /* Azul principal */
 }
 
-/* --- Estilos de los campos de entrada --- */
-.input-group {
+/* Estilos para los campos del formulario */
+.form-group {
     margin-bottom: 15px;
     text-align: left;
 }
 
-.input-group label {
+.form-group label {
     display: block;
-    font-weight: bold;
+    font-size: 14px;
+    color: #333;
     margin-bottom: 5px;
-    color: #0078D7; /* Azul principal */
 }
 
-.input-group input {
+.form-group input {
     width: 100%;
     padding: 10px;
-    border: 1px solid #ccc;
+    font-size: 14px;
+    border: 1px solid #ddd;
     border-radius: 5px;
-    font-size: 1rem;
     box-sizing: border-box;
 }
 
-.input-group input:focus {
-    outline: none;
-    border: 1px solid #0078D7; /* Borde azul al enfocar */
-    box-shadow: 0 0 5px #66c3ff;
-}
-
-/* --- Botón de Ingresar --- */
-.btn-ingresar {
-    width: 100%;
-    padding: 10px;
-    background-color: #0078D7; /* Azul principal */
-    color: #fff;
+/* Botón de inicio de sesión */
+.btn-blue {
+    background-color: #004085;
+    color: white;
+    padding: 10px 15px;
     border: none;
     border-radius: 5px;
+    font-size: 16px;
     cursor: pointer;
-    font-size: 1rem;
-    font-weight: bold;
-    text-transform: uppercase;
-    transition: background-color 0.3s ease;
+    width: 100%;
+    margin-top: 10px;
 }
 
-.btn-ingresar:hover {
-    background-color: #005fa3; /* Azul oscuro */
+.btn-blue:hover {
+    background-color: #004085;
 }
 
-/* --- Opciones debajo del formulario --- */
-.options {
-    margin-top: 15px;
-    font-size: 0.9rem;
+/* Enlaces debajo del formulario */
+.form-links {
+    margin-top: 20px;
 }
 
-.options a {
-    color: #0078D7;
+.form-links a {
+    display: block;
+    color: #007bff;
     text-decoration: none;
-    margin: 0 10px;
-    font-weight: bold;
+    font-size: 14px;
+    margin: 5px 0;
 }
 
-.options a:hover {
+.form-links a:hover {
     text-decoration: underline;
-}
-
-/* --- Responsivo para dispositivos pequeños --- */
-@media (max-width: 600px) {
-    .login-box {
-        padding: 15px 20px;
-    }
-
-    .back-link {
-        top: 10px;
-        left: 10px;
-        padding: 8px 15px;
-    }
 }
 
 

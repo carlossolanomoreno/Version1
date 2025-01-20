@@ -1,0 +1,120 @@
+/* Estilos básicos */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.header, .footer-content {
+    background-color: #007bff; /* Fondo azul */
+    color: white;
+    padding: 10px 20px;
+}
+
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.login {
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.social-icons img {
+    width: 20px;
+    margin: 0 5px;
+}
+
+.logo-container {
+    text-align: center;
+}
+
+.hospital-logo {
+    max-width: 100px;
+}
+
+.nav-bar {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0;
+}
+
+.nav-bar a {
+    margin: 0 15px;
+    text-decoration: none;
+    color: white; /* Texto del menú en blanco */
+    cursor: pointer;
+}
+
+.nav-bar a:hover {
+    text-decoration: underline;
+}
+
+#specialty-message {
+    display: none;
+    margin: 20px auto;
+    padding: 15px;
+    border: 1px solid #ddd;
+    background-color: #e3f2fd; /* Fondo celeste claro */
+    border-radius: 5px;
+    width: 80%;
+    color: #333; /* Texto de los mensajes */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#specialty-message.visible {
+    display: block;
+}
+
+.mision-vision {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+}
+
+.mision, .vision {
+    text-align: center;
+    width: 45%;
+}
+
+.programar-cita {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.btn-blue {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-blue:hover {
+    background-color: #0056b3;
+}
+
+.objetivos {
+    margin: 20px;
+    text-align: center;
+}
+
+.footer-content {
+    text-align: center;
+    padding: 10px;
+    background-color: #007bff; /* Fondo azul */
+    color: white; /* Texto blanco */
+    font-size: 14px;
+}
+
+
+
+
+

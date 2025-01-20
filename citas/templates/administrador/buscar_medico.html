@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Bienvenido a la Aplicación</h2>
+<h3>Gestionar Especialidades Médicas</h3>
+
+<form method="post">
+    {% csrf_token %}
+    <label for="cedula">Ingrese la cédula del médico:</label>
+    <input type="text" name="cedula" id="cedula" required>
+    <button type="submit">Buscar</button>
+</form>
+
+<!-- Mostrar mensajes de error -->
+{% if messages %}
+    <ul>
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<a href="{% url 'dashboard_administrador' %}">Regresar</a>
+<footer>© 2025 Mi Aplicación</footer>
+{% endblock %}
+
+
+

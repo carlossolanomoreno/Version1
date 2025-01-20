@@ -1,0 +1,118 @@
+/* General */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f6f9;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+/* Enlace para regresar con logo */
+.back-link {
+    position: absolute;
+    top: 30px;
+    left: 60px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #66c3ff; /* Fondo azul intermedio */
+    padding: 10px 20px;
+    border-radius: 5px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    text-decoration: none;
+}
+
+.back-link .logo {
+    width: 40px;
+    height: auto;
+}
+
+.back-link .regresar {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.back-link .regresar:hover {
+    text-decoration: underline;
+}
+
+/* Contenedor principal */
+.container {
+    max-width: 1400px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Título */
+h2 {
+    text-align: center;
+    font-size: 24px;
+    color: #222;
+    margin-bottom: 30px;
+}
+
+/* Tabla */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+thead {
+    background-color: #007bff;
+    color: #fff;
+}
+
+thead th {
+    padding: 15px;
+    text-align: left;
+    font-size: 14px;
+    text-transform: uppercase;
+}
+
+tbody tr:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #eef1f7;
+}
+
+tbody td {
+    padding: 12px 15px;
+    font-size: 14px;
+    color: #555;
+}
+
+tbody tr:hover {
+    background-color: #dbe3f3;
+    cursor: pointer;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+
+    table {
+        font-size: 12px;
+    }
+}
+
+
+
+

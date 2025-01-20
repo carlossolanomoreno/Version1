@@ -1,5 +1,7 @@
 import telegram
 from django.conf import settings
+TELEGRAM_BOT_TOKEN='7093012736:AAGS8s1eyorkNMY9YdV-if4g1raox8HjEzQ'
+
 
 # Inicializa el bot
 bot = telegram.Bot(token=settings.TELEGRAM_BOT_TOKEN)

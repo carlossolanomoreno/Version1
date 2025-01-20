@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard del Paciente</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        nav {
+            background-color: #333;
+            color: white;
+            padding: 0.5rem;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+        }
+
+        nav a:hover {
+            background-color: #555;
+        }
+
+        main {
+            padding: 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1rem;
+            padding: 1rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem;
+            background-color: #333;
+            color: white;
+            margin-top: 2rem;
+        }
+
+        .sub-menu {
+            margin-top: 1rem;
+            padding-left: 2rem;
+        }
+
+        .sub-menu a {
+            display: block;
+            color: #007bff;
+            text-decoration: none;
+            margin-bottom: 0.5rem;
+        }
+
+        .sub-menu a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Bienvenido, {{ paciente.nombres }} {{ paciente.apellidos }}</h1>
+</header>
+
+<nav>
+    <a href="{% url 'dashboard_paciente' %}">Inicio</a>
+    <a href="{{ url_agendar_cita }}">Agendar una cita</a>
+    <a href="{% url 'perfil_paciente' paciente.id %}">Mi Perfil</a>
+</nav>
+
+<main>
+    <div class="card">
+        <h3>¡Bienvenido a tu portal del paciente!</h3>
+        <p>Accede a las funcionalidades desde el menú superior.</p>
+    </div>
+
+    {% if citas_pendientes %}
+        <div class="card">
+            <h3>Calificar citas pendientes</h3>
+            {% for cita in citas_pendientes %}
+                <div>
+                    <p>Cita con: {{ cita.doctor }}</p>
+                    <p>Fecha: {{ cita.fecha }}</p>
+                    <a href="{% url 'calificar_cita' cita_id=cita.id %}">Calificar esta cita</a>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card">
+            <p>No tienes citas pendientes para calificar.</p>
+        </div>
+    {% endif %}
+</main>
+
+<footer>
+    <p>&copy; 2025 Sistema de Citas Médicas</p>
+</footer>
+
+</body>
+</html>
+
+

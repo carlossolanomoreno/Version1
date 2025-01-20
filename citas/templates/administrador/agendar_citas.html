@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Agendar Cita</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Agendar Cita</h1>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Agendar</button>
+    </form>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#id_especialidad').change(function() {
+                var especialidad_id = $(this).val();
+                if (especialidad_id) {
+                    $.ajax({
+                        url: '/administrador/cargar_medicos/',
+                        data: {
+                            'especialidad_id': especialidad_id
+                        },
+                        success: function(data) {
+                            var medicoSelect = $('#id_medico');
+                            medicoSelect.empty();
+                            if (data.medicos) {
+                                $.each(data.medicos, function(index, medico) {
+                                    medicoSelect.append('<option value="' + medico.id + '">' + medico.nombre + '</option>');
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        
+            $('#id_medico').change(function() {
+                var medico_id = $(this).val();
+                if (medico_id) {
+                    $.ajax({
+                        url: '/administrador/cargar_horarios/',
+                        data: {
+                            'medico_id': medico_id
+                        },
+                        success: function(data) {
+                            var horarioSelect = $('#id_horario_medico');
+                            horarioSelect.empty();
+                            if (data.horarios) {
+                                $.each(data.horarios, function(index, horario) {
+                                    horarioSelect.append('<option value="' + horario.id + '">' + horario.fecha + ' (' + horario.hora_inicio + '-' + horario.hora_fin + ')</option>');
+                                });
+                            }
+                        }
+                    });
+                }
+            });
+        });
+        
+    </script>
+</body>
+</html>
+
+
+

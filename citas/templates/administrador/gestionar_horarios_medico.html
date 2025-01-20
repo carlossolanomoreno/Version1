@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4" style="color: #4A90E2;">Gestión de Horarios Médicos</h1>
+
+    <!-- Mostrar mensajes -->
+    {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Formulario para agregar horario -->
+    <div class="card shadow-sm p-4 mb-5">
+        <h3 class="text-center mb-3" style="color: #333;">Agregar Nuevo Horario</h3>
+        <form method="POST" action="{% url 'gestionar_horarios_medico' %}">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="medico" class="form-label">Médico:</label>
+                <select id="medico" name="medico" class="form-select" required>
+                    {% for medico in medicos %}
+                    <option value="{{ medico.id }}">{{ medico.usuario.nombres }} {{ medico.usuario.apellidos }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="dia" class="form-label">Día:</label>
+                <select id="dia" name="dia" class="form-select" required>
+                    <option value="Lunes">Lunes</option>
+                    <option value="Martes">Martes</option>
+                    <option value="Miércoles">Miércoles</option>
+                    <option value="Jueves">Jueves</option>
+                    <option value="Viernes">Viernes</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="fecha" class="form-label">Fecha (opcional):</label>
+                <input type="date" id="fecha" name="fecha" class="form-control">
+            </div>
+
+            <div class="mb-3">
+                <label for="hora_inicio" class="form-label">Hora de inicio:</label>
+                <input type="time" id="hora_inicio" name="hora_inicio" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="hora_fin" class="form-label">Hora de fin:</label>
+                <input type="time" id="hora_fin" name="hora_fin" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="estado" class="form-label">Estado:</label>
+                <select id="estado" name="estado" class="form-select" required>
+                    <option value="Disponible">Disponible</option>
+                    <option value="No Disponible">No Disponible</option>
+                </select>
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary btn-lg" style="background-color: #4A90E2; border: none;">Guardar Horario</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Tabla para mostrar horarios -->
+    <div class="card shadow-sm p-4">
+        <h3 class="text-center mb-3" style="color: #333;">Horarios Registrados</h3>
+        <table class="table table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Médico</th>
+                    <th>Día</th>
+                    <th>Fecha</th>
+                    <th>Hora Inicio</th>
+                    <th>Hora Fin</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for horario in horarios %}
+                <tr>
+                    <td>{{ horario.medico.usuario.nombres }} {{ horario.medico.usuario.apellidos }}</td>
+                    <td>{{ horario.dia }}</td>
+                    <td>{{ horario.fecha|default:"N/A" }}</td>
+                    <td>{{ horario.hora_inicio }}</td>
+                    <td>{{ horario.hora_fin }}</td>
+                    <td>
+                        <span class="badge {% if horario.estado == 'Disponible' %}bg-success{% else %}bg-danger{% endif %}">
+                            {{ horario.estado }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+
+

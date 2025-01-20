@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión Paciente</title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+</head>
+<body>
+    <!-- Opción para regresar al inicio -->
+    <div class="back-to-index">
+        <a href="{% url 'home' %}">Regresar al inicio</a>
+    </div>
+
+    <!-- Formulario de inicio de sesión -->
+    <div class="login-container">
+        <h1>Iniciar Sesión Paciente</h1>
+        <form method="POST" action="{% url 'login_paciente' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="cedula">Cédula</label>
+                <input type="number" name="cedula" id="cedula" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Contraseña</label>
+                <input type="password" name="password" id="password" required>
+            </div>
+
+            <button type="submit" class="btn-blue">Iniciar sesión</button>
+        </form>
+
+        <!-- Enlaces adicionales -->
+        <div class="form-links">
+            <a href="{% url 'registro_paciente' %}">Registrar nuevo paciente</a>
+            <a href="{% url 'recuperar_credenciales_paciente' %}">Recuperar credenciales</a>
+        </div>
+    </div>
+</body>
+</html>
+
+

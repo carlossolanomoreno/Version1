@@ -14,47 +14,41 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.urls import path
-from . import views
-from .views import login_view
+from django.urls import path, include
 from django.contrib import admin
+from django.contrib.auth.views import LogoutView
+from . import views
+
 
 urlpatterns = [
+    # Administración de Django
+    
+
     
     path('admin/', admin.site.urls),
-    
+
+    # Rutas específicas de pacientes
+    path('paciente/', include('citas.paciente.urls')),
+
+    # Rutas específicas de administrador
+    path('administrador/', include('citas.administrador.urls')),
+
+    # Rutas específicas de médicos
+    path('medico/', include('citas.medico.urls')),
+
+
+
+    # Logout para cualquier tipo de usuario
+    path('logout/', LogoutView.as_view(), name='user_logout'),
+
+    # Página principal del sistema
     path('', views.home, name='home'),
-    
-    path('home/', views.home, name='home'),
-    
-    path('login/', login_view, name='login'),
-    
-    
-    
-    path('recuperar-credenciales/', views.recuperar_credenciales, name='recuperar_credenciales'),
-    
-    # Ruta para registrar un usuario
-    path('usuario_registro/', views.registrar_usuario, name='registrar_usuario'),
-    
-    path('listar_usuarios/', views.listar_usuarios, name='listar_usuarios'),
-    
-    # Ruta para registrar un paciente
-    path('pacientes/registro/', views.registrar_paciente, name='registrar_paciente'),
-    
-    # Ruta para agendar una cita
-    path('citas/agendar/', views.agendar_cita, name='agendar_cita'),
-    
-    # Ruta para listar citas
-    path('citas/lista/', views.listar_citas, name='listar_citas'),
-    
-    # Ruta para registrar un diagnóstico
-    path('diagnosticos/registro/<int:cita_id>/', views.registrar_diagnostico, name='registrar_diagnostico'),
-    
-    # Ruta para emitir una receta médica
-    path('recetas/emitir/<int:cita_id>/', views.emitir_receta, name='emitir_receta'),
-    
-    # Ruta para registrar una calificación
-    path('calificaciones/registro/<int:cita_id>/', views.registrar_calificacion, name='registrar_calificacion'),
-    
-    
 ]
+
+# Configuración de archivos multimedia en desarrollo
+from django.conf import settings
+from django.conf.urls.static import static
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

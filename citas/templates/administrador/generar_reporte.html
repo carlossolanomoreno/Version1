@@ -1,0 +1,51 @@
+<!-- administrador/templates/administrador/reporte.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generar Reporte</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>{{ nombre_reporte }}</h1>
+        <p><strong>Fecha de creación:</strong> {{ fecha_creacion }}</p>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Total Pacientes</th>
+                    <th>Total Citas</th>
+                    <th>Citas Pendientes</th>
+                    <th>Citas Finalizadas</th>
+                    <th>Citas Canceladas</th>
+                    <th>Total Diagnósticos</th>
+                    <th>Promedio Calificación</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ total_pacientes }}</td>
+                    <td>{{ total_citas }}</td>
+                    <td>{{ citas_pendientes }}</td>
+                    <td>{{ citas_finalizadas }}</td>
+                    <td>{{ citas_canceladas }}</td>
+                    <td>{{ total_diagnosticos }}</td>
+                    <td>{{ promedio_calificacion }}</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        {% if mensaje %}
+            <p>{{ mensaje }}</p>
+        {% endif %}
+        
+        {% if error %}
+            <p style="color: red;">{{ error }}</p>
+        {% endif %}
+    </div>
+</body>
+</html>
+
