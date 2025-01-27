@@ -1,13 +1,5 @@
 from rest_framework.permissions import BasePermission
 
-class IsSecretaria(BasePermission):
-    """
-    Permiso personalizado para verificar si el usuario autenticado
-    tiene un perfil de 'Secretaria'.
-    """
-    def has_permission(self, request, view):
-        # Verifica si el usuario autenticado tiene un atributo 'secretaria'
-        return hasattr(request.user, 'secretaria')
 
 class IsAdministrador(BasePermission):
     """

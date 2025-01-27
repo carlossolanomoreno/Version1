@@ -1,0 +1,150 @@
+
+{% block content %}
+<div class="agenda-container">
+    <h2 class="titulo">Agenda de Citas</h2>
+
+    <!-- Volver al Dashboard -->
+    <div class="volver-dashboard">
+        <a href="{% url 'dashboard_medico' %}" class="btn-dashboard">Volver al Dashboard</a>
+    </div>
+
+    <table class="tabla-agenda">
+        <thead>
+            <tr>
+                <th>Paciente</th>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cita in citas %}
+            <tr class="tabla-fila">
+                <td>
+                    {% if cita.paciente %}
+                        {{ cita.paciente.usuario.nombres }} {{ cita.paciente.usuario.apellidos }}
+                    {% else %}
+                        No asignado
+                    {% endif %}
+                </td>
+                <td>{{ cita.horario_medico.dia }}</td>
+                <td>{{ cita.horario_medico.hora_inicio }} - {{ cita.horario_medico.hora_fin }}</td>
+                <td>{{ cita.estado }}</td>
+                <td>
+                    <form method="POST" action="{% url 'actualizar_estado_cita' cita.id %}">
+                        {% csrf_token %}
+                        <select name="estado" class="estado-select">
+                            <option value="Pendiente" {% if cita.estado == "Pendiente" %}selected{% endif %}>Pendiente</option>
+                            <option value="Finalizada" {% if cita.estado == "Finalizada" %}selected{% endif %}>Finalizada</option>
+                            <option value="Cancelada" {% if cita.estado == "Cancelada" %}selected{% endif %}>Cancelada</option>
+                        </select>
+                        <button type="submit" class="btn-actualizar">Actualizar</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+<!-- Estilos -->
+<style>
+    /* Estilos generales */
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f9f9f9;
+        margin: 0;
+        padding: 0;
+    }
+
+    .agenda-container {
+        background-color: #fff;
+        width: 80%;
+        margin: 40px auto;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .titulo {
+        text-align: center;
+        color: #0056b3;
+        margin-bottom: 20px;
+    }
+
+    /* Estilo para la tabla */
+    .tabla-agenda {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    .tabla-agenda th,
+    .tabla-agenda td {
+        padding: 12px;
+        text-align: center;
+        border: 1px solid #ddd;
+    }
+
+    .tabla-agenda th {
+        background-color: #0056b3;
+        color: white;
+    }
+
+    .tabla-agenda tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    .tabla-fila:hover {
+        background-color: #e9f7fc;
+    }
+
+    /* Estilo para el botón "Volver al Dashboard" */
+    .volver-dashboard {
+        text-align: right;
+        margin-bottom: 20px;
+    }
+
+    .btn-dashboard {
+        background-color: #28a745;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-weight: bold;
+        display: inline-block;
+    }
+
+    .btn-dashboard:hover {
+        background-color: #218838;
+    }
+
+    /* Estilo para el botón de actualizar */
+    .btn-actualizar {
+        background-color: #007bff;
+        color: white;
+        padding: 8px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .btn-actualizar:hover {
+        background-color: #0056b3;
+    }
+
+    /* Estilo para el select */
+    .estado-select {
+        padding: 5px 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+</style>
+
+
+
+
+

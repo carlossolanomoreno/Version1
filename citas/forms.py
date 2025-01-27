@@ -1,11 +1,12 @@
 from django import forms
-from citas.models import Usuario, Administrador, Paciente, Cita, Diagnostico, Medico, Especialidad, RecetaMedica, ExamenMedico, Calificacion, Agenda, HorarioMedico, Usuario, Secretaria
+from citas.models import Usuario, Administrador, Paciente, Cita, Diagnostico, Medico, Especialidad, RecetaMedica, ExamenMedico, Calificacion, HorarioMedico, Usuario, Secretaria, HistorialClinico
 from django.core.exceptions import ValidationError
 from .validators import validador_cedula
 from django.utils import timezone
 from django.contrib.auth.models import Group
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.password_validation import validate_password
 
 
 
@@ -67,9 +68,12 @@ class RegistroUsuarioForm(forms.ModelForm):
 class RegistroAdministradorForm(forms.ModelForm):
     class Meta:
         model = Usuario
-        fields = ['cedula', 'nombres', 'apellidos', 'username', 'correo_electronico', 'password', 'chat_id', 'telefono', 'direccion', 'ciudad_residencia', 'fecha_nacimiento', 'genero']
-    
-    # Personaliza los mensajes de error para el campo username
+        fields = [
+            'cedula', 'nombres', 'apellidos', 'username', 'correo_electronico', 
+            'password', 'chat_id', 'telefono', 'direccion', 
+            'ciudad_residencia', 'fecha_nacimiento', 'genero'
+        ]
+
     username = forms.CharField(
         max_length=150,
         required=True,
@@ -80,11 +84,26 @@ class RegistroAdministradorForm(forms.ModelForm):
         }
     )
 
+    password = forms.CharField(
+        widget=forms.PasswordInput(),
+        validators=[validate_password],
+        error_messages={'required': 'La contraseña es obligatoria.'}
+    )
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if Usuario.objects.filter(username=username).exists():
+            raise forms.ValidationError("Este nombre de usuario ya está en uso.")
+        return username
+
     def clean_correo_electronico(self):
         correo = self.cleaned_data.get('correo_electronico')
         if not correo:
             raise forms.ValidationError("El correo electrónico es obligatorio.")
-        return correo  
+        if Usuario.objects.filter(correo_electronico=correo).exists():
+            raise forms.ValidationError("Este correo electrónico ya está registrado.")
+        return correo
+
 
 
 
@@ -164,12 +183,6 @@ class PacienteForm(forms.ModelForm):
         model = Paciente
         fields = '__all__'
 
-class FotoPerfilForm(forms.ModelForm):
-    class Meta:
-        model = Paciente
-        fields = ['foto_perfil']  # Asegúrate de que este campo existe en el modelo
-        labels = {'foto_perfil': 'Subir foto de perfil'}
-
     
 class EspecialidadForm(forms.ModelForm):
     class Meta:
@@ -182,63 +195,74 @@ class EspecialidadForm(forms.ModelForm):
 
         
 #Funciones del Paciente
-class AgendarCitaForm(forms.Form):
-    especialidad = forms.ModelChoiceField(queryset=Especialidad.objects.filter(estado='Activa'))
-    medico = forms.ModelChoiceField(queryset=Medico.objects.none())  # Inicialmente sin médicos
-    horario_medico = forms.ModelChoiceField(queryset=HorarioMedico.objects.none())  # Para elegir el horario disponible
-
-
+class AgendarCitaForm(forms.ModelForm):
     class Meta:
         model = Cita
-        fields = ['especialidad', 'medico', 'horario_medico']
+        fields = ['paciente', 'especialidad', 'medico', 'horario_medico']
 
     def __init__(self, *args, **kwargs):
-        paciente = kwargs.pop('paciente', None)
         super().__init__(*args, **kwargs)
-        if paciente:
-            # Filtro de médicos por especialidad
-            self.fields['medico'].queryset = Medico.objects.filter(especialidades__pacientes=paciente)
 
-    def clean(self):
-        cleaned_data = super().clean()
-        especialidad = cleaned_data.get('especialidad')
-        medico = cleaned_data.get('medico')
-        horario_medico = cleaned_data.get('horario_medico')
+        # El administrador selecciona al paciente, por lo que el queryset debe incluir todos los pacientes.
+        self.fields['paciente'].queryset = Paciente.objects.all()  # Todos los pacientes
+        self.fields['especialidad'].queryset = Especialidad.objects.all()  # Todas las especialidades
+        self.fields['medico'].queryset = Medico.objects.all()  # Todos los médicos
+        self.fields['horario_medico'].queryset = HorarioMedico.objects.all()  # Todos los horarios
+
+        # Opcional: Añadir etiquetas más descriptivas a los campos
+        self.fields['paciente'].label = "Seleccione el paciente"
+        self.fields['especialidad'].label = "Seleccione la especialidad"
+        self.fields['medico'].label = "Seleccione el médico"
+        self.fields['horario_medico'].label = "Seleccione el horario"
 
 
 
 
-
-class CalificarCitaForm(forms.ModelForm):
-    class Meta:
-        model = Calificacion
-        fields = ['calificacion', 'comentario']
 
 
 class CitaForm(forms.ModelForm):
     class Meta:
         model = Cita
-        fields = ['medico', 'especialidad', 'paciente', 'horario_medico']
+        fields = ['especialidad', 'medico', 'horario_medico']
 
     def __init__(self, *args, **kwargs):
+        # Obtén el usuario del argumento 'request' pasado al formulario
+        self.request = kwargs.pop('request', None)
         super().__init__(*args, **kwargs)
+
+        # Filtrar los horarios médicos
         self.fields['horario_medico'].queryset = HorarioMedico.objects.all()
-        
-class AgendaForm(forms.ModelForm):
+
+    def save(self, commit=True):
+        # Asigna automáticamente el paciente autenticado
+        cita = super().save(commit=False)
+        if self.request:
+            cita.paciente = self.request.user.paciente
+        if commit:
+            cita.save()
+        return cita
+    
+    
+
+class CalificarCitaForm(forms.ModelForm):
     class Meta:
-        model = Agenda
-        fields = []
+        model = Calificacion
+        fields = ['calificacion', 'comentario']
+        widgets = {
+            'calificacion': forms.Select(attrs={'class': 'form-control'}),  # Menú desplegable
+            'comentario': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
+        }
+
+
+    
+        
         
 class HorarioMedicoForm(forms.ModelForm):
     class Meta:
         model = HorarioMedico
-        fields = ['medico', 'dia', 'hora_inicio', 'hora_fin']
-                
-class CalificacionForm(forms.ModelForm):
-    class Meta:
-        model = Calificacion
-        fields = ['cita', 'calificacion', 'comentario']
-        
+        fields = ['medico', 'dia', 'fecha', 'hora_inicio', 'hora_fin']
+
+                   
         
 class SecretariaForm(forms.ModelForm):
     confirmar_password = forms.CharField(
@@ -249,7 +273,12 @@ class SecretariaForm(forms.ModelForm):
 
     class Meta:
         model = Usuario
-        fields = ['cedula', 'username', 'nombres', 'apellidos', 'correo_electronico', 'telefono', 'direccion', 'ciudad_residencia', 'fecha_nacimiento', 'genero', 'chat_id', 'password']
+        fields = ['cedula', 'username', 'nombres', 'apellidos', 'correo_electronico', 'chat_id', 'telefono', 
+                  'direccion', 'ciudad_residencia', 'fecha_nacimiento', 'genero', 'password']
+        widgets = {
+            'password': forms.PasswordInput(attrs={'placeholder': 'Contraseña'}),
+            'fecha_nacimiento': forms.DateInput(attrs={'type': 'date'}),
+        }
 
     def clean(self):
         cleaned_data = super().clean()
@@ -265,7 +294,10 @@ class SecretariaForm(forms.ModelForm):
         usuario = super().save(commit=False)
         usuario.tipo_usuario = 'Secretaria'  # Asigna el tipo de usuario como 'Secretaria'
         if commit:
+            # Encriptar la contraseña antes de guardarla
             usuario.set_password(self.cleaned_data['password'])
+            
+            # Guardar el usuario
             usuario.save()
 
             # Crear el grupo "Secretaria" si no existe
@@ -273,9 +305,9 @@ class SecretariaForm(forms.ModelForm):
             usuario.groups.add(grupo)  # Asocia el usuario al grupo "Secretaria"
 
             # Crear una entrada en la tabla Secretaria
-            Secretaria = Secretaria.objects.create(usuario=usuario)
+            secretaria = Secretaria.objects.create(usuario=usuario)
 
-            print(f"Secretaria {Secretaria.usuario.username} registrado correctamente.")
+            print(f"Secretaria {secretaria.usuario.username} registrada correctamente.")
 
         return usuario
 
@@ -291,11 +323,21 @@ class SecretariaForm(forms.ModelForm):
             raise ValidationError("El Chat ID ya está en uso.")
         return chat_id
 
-    def clean_cedula(self):
-        cedula = self.cleaned_data['cedula']
-        if cedula <= 0 or cedula > 9999999999:  # Ajusta el rango según tu país
-            raise ValidationError("La cédula debe ser un número positivo de máximo 10 dígitos.")
-        return cedula
+def clean_cedula(self):
+    cedula = self.cleaned_data.get('cedula')
+
+    # Intentar convertir la cédula a un número entero
+    try:
+        cedula = int(cedula)
+    except ValueError:
+        raise forms.ValidationError('La cédula debe ser un número válido.')
+
+    # Verificar que la cédula esté en el rango adecuado
+    if cedula <= 0 or cedula > 9999999999:  # Ajusta el rango según tu país
+        raise forms.ValidationError('La cédula debe ser un número positivo y no mayor a 9999999999.')
+
+    return cedula
+
         
         
 
@@ -357,14 +399,26 @@ class CambiarContrasenaForm(PasswordChangeForm):
 class DiagnosticoForm(forms.ModelForm):
     class Meta:
         model = Diagnostico
-        fields = ['cita', 'medico', 'descripcion', 'proximo_control']
+        fields = ['cita', 'medico', 'descripcion', 'fecha','proximo_control']
 
 class RecetaForm(forms.ModelForm):
     class Meta:
         model = RecetaMedica
-        fields = ['cita', 'medicamentos', 'indicaciones']
+        fields = ['cita', 'medicamentos', 'indicaciones', 'medicamentos', 'fecha']
 
 class ExamenForm(forms.ModelForm):
     class Meta:
         model = ExamenMedico
         fields = ['cita', 'tipo', 'descripcion']
+        
+    
+
+class BuscarPacienteForm(forms.Form):
+    cedula = forms.CharField(max_length=20, required=True, label='Número de Cédula')
+
+    def buscar(self):
+        cedula = self.cleaned_data.get('cedula')
+
+        # Buscar al paciente por cédula
+        queryset = Paciente.objects.filter(cedula=cedula)
+        return queryset

@@ -13,8 +13,11 @@ import string
 import requests
 import os
 from PIL import Image
-from django.conf import settings
-from datetime import timedelta, time, datetime
+from datetime import time, datetime, timedelta
+from django.db.models import Avg, Count
+from django.utils.timezone import now
+
+
 
 # Administrador personalizado para crear usuarios
 class UsuarioManager(BaseUserManager):
@@ -95,7 +98,6 @@ class Usuario(AbstractUser, PermissionsMixin):
 #Paciente
 class Paciente(models.Model):
     usuario = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    foto_perfil = models.ImageField(upload_to='fotos_perfil/', blank=True, null=True)
     def __str__(self):
         return f"Paciente: {self.usuario.nombres} {self.usuario.apellidos}"
 
@@ -156,83 +158,73 @@ class HorarioMedico(models.Model):
         ('Jueves', 'Jueves'),
         ('Viernes', 'Viernes'),
     ])
+    fecha = models.DateField()  # Agregado para representar la fecha concreta
     hora_inicio = models.TimeField()
     hora_fin = models.TimeField()
 
     def __str__(self):
-        return f'{self.dia} de {self.hora_inicio} a {self.hora_fin}'
+        return f'{self.dia} {self.fecha} de {self.hora_inicio} a {self.hora_fin}'
     
-    
-from citas.models import HorarioMedico, Usuario
 
-def crear_turnos():
+
+def crear_turnos(medico):
+    # Código para generar los turnos
     horarios = []
     dias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes']
     horas_mañana = [time(9, 0), time(9, 30), time(10, 0), time(10, 30), time(11, 0), time(11, 30)]
     horas_tarde = [time(16, 0), time(16, 30), time(17, 0), time(17, 30)]
+    
+    hoy = timezone.now()
+    fecha_inicio = hoy.replace(day=1)
 
-    # Obtén todos los médicos registrados en la base de datos
-    medicos = Usuario.objects.filter(tipo_usuario='Médico')
+    for mes in range(3):  # Generar horarios para tres meses
+        mes_actual = fecha_inicio.replace(month=(fecha_inicio.month + mes) if fecha_inicio.month + mes <= 12 
+                                          else fecha_inicio.month + mes - 12, 
+                                          year=fecha_inicio.year + (fecha_inicio.month + mes) // 12)
 
-    if not medicos.exists():
-        raise ValueError("No hay médicos registrados en la base de datos.")
-
-    for medico in medicos:
-        for dia in dias:
+        for dia_idx, dia in enumerate(dias):
             for hora_inicio in horas_mañana + horas_tarde:
+                fecha = mes_actual + timedelta(days=(dia_idx * 7))
                 hora_fin = (datetime.combine(datetime.today(), hora_inicio) + timedelta(minutes=30)).time()
-                horarios.append(HorarioMedico(medico=medico, dia=dia, hora_inicio=hora_inicio, hora_fin=hora_fin))
 
-    # Insertar los horarios generados en la base de datos
+                horarios.append(HorarioMedico(medico=medico.usuario, dia=dia, fecha=fecha, hora_inicio=hora_inicio, hora_fin=hora_fin))
+
+
     HorarioMedico.objects.bulk_create(horarios)
 
 
-    
-    
-# Agenda
-class Agenda(models.Model):
-    medico = models.OneToOneField(Medico, on_delete=models.CASCADE, related_name='agenda')
-    fecha_actualizacion = models.DateTimeField(auto_now=True)  # Última vez que se actualizó la agenda
-
-    def citas_pendientes(self):
-        return self.medico.citas.filter(estado='Pendiente')
-    
-
-    def citas_por_fecha(self, fecha):
-        return self.medico.citas.filter(fecha_cita=fecha)
-
-    def __str__(self):
-        return f"Agenda de {self.medico.usuario.nombres} {self.medico.usuario.apellidos}"
 
 # Cita
 class Cita(models.Model):
     medico = models.ForeignKey(Medico, on_delete=models.CASCADE, related_name="citas")
     especialidad = models.ForeignKey(Especialidad, on_delete=models.CASCADE, related_name="citas")
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, related_name="citas")
-    horario_medico = models.ForeignKey(HorarioMedico, on_delete=models.SET_DEFAULT, default=1)  # Aquí está el horario médico
+    horario_medico = models.ForeignKey(HorarioMedico, on_delete=models.SET_DEFAULT, default=1)  
+    fecha_hora = models.DateTimeField(default=now)
     estado = models.CharField(max_length=20, choices=[
         ('Pendiente', 'Pendiente'),
-        ('Confirmada', 'Confirmada'),
+        ('Finalizada', 'Finalizada'),
         ('Cancelada', 'Cancelada'),
-        ('En Atención', 'En Atención'),
-        ('Finalizada', 'Finalizada')
     ], default='Pendiente')
 
     def __str__(self):
         return f"Cita {self.especialidad.nombre_especialidad} con {self.medico.usuario.nombres} - {self.horario_medico.dia} {self.horario_medico.hora_inicio}-{self.horario_medico.hora_fin}"
+    
+    def citas_pendientes(self):
+        return self.objects.filter(estado='Pendiente', medico=self.medico)
+
 
 
       
 # Historial Clinico
 class HistorialClinico(models.Model):
     paciente = models.ForeignKey(Paciente, on_delete=models.CASCADE, related_name='historia')
-    fecha_creacion = models.DateField(auto_now_add=True)
-    antecedentes = models.TextField(null=True, blank=True)
-    alergias = models.TextField(null=True, blank=True)
-    enfermedades_cronicas = models.TextField(null=True, blank=True)   
-    
+    diagnosticos = models.ManyToManyField('Diagnostico', related_name='historiales', blank=True)
+    examenes = models.ManyToManyField('ExamenMedico', related_name='historiales', blank=True)
+    recetas = models.ManyToManyField('RecetaMedica', related_name='historiales', blank=True)
+
     def __str__(self):
-        return f"Historial Clínico de {self.paciente.usuario.nombres}"
+        return f"Historial Clínico de {self.paciente.usuario.nombres} {self.paciente.usuario.apellidos}"
     
 # Diagnostico
 class Diagnostico(models.Model):
@@ -273,114 +265,53 @@ class Secretaria(models.Model):
     def __str__(self):
         return f"Secretaria: {self.usuario.nombres} {self.usuario.apellidos}"
 
-
-    def agendar_cita(self, especialidad, medico, paciente, fecha, hora):
-        """Agendar una cita para un paciente con un médico."""
-        from datetime import datetime
-
-        # Validar disponibilidad del médico
-        horarios_disponibles = HorarioMedico.objects.filter(
-            medico=medico,
-            fecha=fecha,
-            hora_inicio__lte=hora,
-            hora_fin__gte=hora,
-            estado="Disponible"
-        )
-        if not horarios_disponibles.exists():
-            raise ValueError("El médico no está disponible en la fecha y hora solicitadas.")
-
-        # Verificar si ya existe una cita confirmada en ese horario
-        if Cita.objects.filter(
-            medico=medico,
-            fecha_cita=fecha,
-            hora_cita=hora,
-            estado="Confirmada"
-        ).exists():
-            raise ValueError("Ya existe una cita confirmada para ese horario.")
-
-        # Crear la cita
-        cita = Cita.objects.create(
-            medico=medico,
-            especialidad=especialidad,
-            paciente=paciente,
-            fecha_cita=fecha,
-            hora_cita=hora,
-            estado="Confirmada"
-        )
-
-        # Cambiar el estado de la disponibilidad del horario
-        horarios_disponibles.update(estado="No Disponible")
-
-        # Enviar mensaje de confirmación por Telegram
-        self.enviar_mensaje_telegram(paciente, f"Cita programada: {especialidad.nombre_especialidad} con {medico.usuario.nombres} el {fecha} a las {hora}.")
-        return cita
-
-    def cancelar_cita(self, cita):
-        """Cancelar una cita previamente agendada."""
-        if cita.estado == "Confirmada":
-            cita.estado = "Cancelada"
-            cita.save()
-            # Cambiar el estado del horario a disponible
-            HorarioMedico.objects.filter(
-                medico=cita.medico, 
-                fecha=cita.fecha_cita, 
-                hora_inicio=cita.hora_cita
-                ).update(estado="Disponible")
-
-            # Notificar al paciente sobre la cancelación
-            self.enviar_mensaje_telegram(cita.paciente, f"Tu cita con el médico {cita.medico.usuario.nombres} ha sido cancelada.")
-        else:
-            raise ValueError("La cita no puede ser cancelada porque no está confirmada.")
-
-    def enviar_mensaje_telegram(self, paciente, mensaje):
-        """Enviar mensaje de notificación a través de Telegram."""
-        if not paciente.usuario.chat_id:
-            raise ValueError("El paciente no tiene un chat_id registrado para recibir mensajes.")
-
-        token = os.getenv('TELEGRAM_BOT_TOKEN')
-        url = f'https://api.telegram.org/bot{token}/sendMessage'
-        payload = {'chat_id': paciente.usuario.chat_id, 'text': mensaje}
-
-        try:
-            response = requests.post(url, data=payload)
-            response.raise_for_status()
-        except requests.exceptions.RequestException as e:
-            raise ValueError(f"Error al enviar mensaje de Telegram: {e}")
-
- 
-# Calificación
 class Calificacion(models.Model):
+    CALIFICACION_OPCIONES = [
+        ('Excelente', 5),
+        ('Muy bueno', 4),
+        ('Bueno', 3),
+        ('Regular', 2),
+        ('Malo', 1),
+        ('Pésimo', 0),
+    ]
+
     cita = models.ForeignKey(Cita, on_delete=models.CASCADE, related_name='calificacion', null=True, blank=True)
-    calificacion = models.PositiveSmallIntegerField(
-        choices=[(i, i) for i in range(1, 6)],
-        default=3)  # Calificación del 1 al 5
+    calificacion = models.IntegerField(choices=[(valor, nombre) for nombre, valor in CALIFICACION_OPCIONES], default=3)
     comentario = models.TextField(null=True, blank=True)
     fecha = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Calificación {self.calificacion} - Cita: {self.cita.fecha_cita}"
+        return f"Calificación: {self.calificacion} - Cita: {self.cita.fecha_cita}"
+
+
 
 
 
 class Estadisticas(models.Model):
     # Campos generales
     fecha_creacion = models.DateTimeField(auto_now_add=True)
-    nombre_reporte = models.CharField(max_length=100)  # Nombre identificador del reporte
+    nombre_reporte = models.CharField(max_length=100, default="Estadísticas Generales")  # Nombre identificador del reporte
 
     # Datos relacionados con Pacientes
     total_pacientes = models.PositiveIntegerField(default=0)
+    pacientes_atendidos_por_especialidad = models.JSONField(default=dict)
 
     # Datos relacionados con Citas
     total_citas = models.PositiveIntegerField(default=0)
     citas_pendientes = models.PositiveIntegerField(default=0)
     citas_finalizadas = models.PositiveIntegerField(default=0)
     citas_canceladas = models.PositiveIntegerField(default=0)
+    citas_por_dia = models.JSONField(default=dict)
+    citas_por_semana = models.JSONField(default=dict)
+    citas_por_mes = models.JSONField(default=dict)
+    citas_por_ano = models.JSONField(default=dict)
 
     # Datos relacionados con Diagnósticos
     total_diagnosticos = models.PositiveIntegerField(default=0)
 
     # Datos relacionados con Calificaciones
     promedio_calificacion = models.FloatField(default=0.0)
+    calificaciones_por_medico = models.JSONField(default=dict)
 
     def __str__(self):
         return f"Reporte Estadístico: {self.nombre_reporte} ({self.fecha_creacion.strftime('%Y-%m-%d %H:%M:%S')})"
@@ -393,25 +324,42 @@ class Estadisticas(models.Model):
         try:
             # Calcular métricas generales
             total_pacientes = Paciente.objects.count()
+            
+            # Pacientes atendidos por especialidad
+            pacientes_atendidos_por_especialidad = Paciente.objects.values('especialidad__nombre_especialidad').annotate(total=Count('id')).order_by()
+
+            # Citas
             total_citas = Cita.objects.count()
             citas_pendientes = Cita.objects.filter(estado="Pendiente").count()
             citas_finalizadas = Cita.objects.filter(estado="Finalizada").count()
             citas_canceladas = Cita.objects.filter(estado="Cancelada").count()
-            total_diagnosticos = Diagnostico.objects.count()
-            promedio_calificacion = (
-                Calificacion.objects.aggregate(promedio=Avg('calificacion'))['promedio'] or 0.0
-            )
+
+            # Citas por fechas
+            citas_por_dia = Cita.objects.values('horario_medico__dia').annotate(total=Count('id')).order_by('horario_medico__dia')
+            citas_por_semana = Cita.objects.extra(select={'semana': "WEEK(horario_medico.dia)"}).values('semana').annotate(total=Count('id')).order_by('semana')
+            citas_por_mes = Cita.objects.extra(select={'mes': "MONTH(horario_medico.dia)"}).values('mes').annotate(total=Count('id')).order_by('mes')
+            citas_por_ano = Cita.objects.extra(select={'ano': "YEAR(horario_medico.dia)"}).values('ano').annotate(total=Count('id')).order_by('ano')
+
+            # Calificaciones
+            promedio_calificacion = Calificacion.objects.aggregate(promedio=Avg('calificacion'))['promedio'] or 0.0
+            calificaciones_por_medico = Calificacion.objects.values('medico__usuario__nombres', 'medico__usuario__apellidos').annotate(promedio=Avg('calificacion')).order_by()
 
             # Crear y guardar un nuevo registro de estadísticas
             estadisticas = cls.objects.create(
                 nombre_reporte=nombre_reporte,
                 total_pacientes=total_pacientes,
+                pacientes_atendidos_por_especialidad=pacientes_atendidos_por_especialidad,
                 total_citas=total_citas,
                 citas_pendientes=citas_pendientes,
                 citas_finalizadas=citas_finalizadas,
                 citas_canceladas=citas_canceladas,
-                total_diagnosticos=total_diagnosticos,
+                citas_por_dia=citas_por_dia,
+                citas_por_semana=citas_por_semana,
+                citas_por_mes=citas_por_mes,
+                citas_por_ano=citas_por_ano,
+                total_diagnosticos=Diagnostico.objects.count(),
                 promedio_calificacion=promedio_calificacion,
+                calificaciones_por_medico=calificaciones_por_medico,
             )
             return estadisticas
         except Exception as e:

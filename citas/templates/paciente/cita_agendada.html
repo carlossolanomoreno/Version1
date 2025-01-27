@@ -1,29 +1,50 @@
-<!-- templates/paciente/cita_agendada.html -->
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cita Agendada</title>
+    <title>Dashboard del Paciente</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
     <div class="container">
-        <h1>Cita Agendada Exitosamente</h1>
+        <h1>Bienvenido al portal del paciente</h1>
 
-        {% if cita %}
-            <p><strong>Paciente:</strong> {{ cita.paciente.nombres }} {{ cita.paciente.apellidos }}</p>
-            <p><strong>Médico:</strong> {{ cita.medico.usuario.nombres }} {{ cita.medico.usuario.apellidos }}</p>
-            <p><strong>Especialidad:</strong> {{ cita.especialidad.nombre_especialidad }}</p>
-            <p><strong>Fecha de la cita:</strong> {{ cita.fecha_cita }}</p>
-            <p><strong>Estado:</strong> {{ cita.estado }}</p>
-            <p><strong>Horario:</strong> {{ cita.horario_medico.hora_inicio }} - {{ cita.horario_medico.hora_fin }}</p>
-        {% else %}
-            <p>No se encontró ninguna cita agendada.</p>
-        {% endif %}
+        <div class="card">
+            <h3>Tus citas pendientes</h3>
+            {% if citas_pendientes %}
+                {% for cita in citas_pendientes %}
+                    <p><strong>Fecha:</strong> {{ cita.horario_medico.dia }}</p>
+                    <p><strong>Hora:</strong> {{ cita.horario_medico.hora_inicio }} - {{ cita.horario_medico.hora_fin }}</p>
+                    <p><strong>Médico:</strong> {{ cita.medico.usuario.nombres }} {{ cita.medico.usuario.apellidos }}</p>
+                    <p><strong>Especialidad:</strong> {{ cita.especialidad.nombre_especialidad }}</p>
+                    <p><strong>Estado:</strong> {{ cita.estado }}</p>
+                {% endfor %}
+            {% else %}
+                <p>No tienes citas pendientes.</p>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <h3>Tus citas finalizadas</h3>
+            {% if citas_finalizadas %}
+                {% for cita in citas_finalizadas %}
+                    <p><strong>Fecha:</strong> {{ cita.horario_medico.dia }}</p>
+                    <p><strong>Hora:</strong> {{ cita.horario_medico.hora_inicio }} - {{ cita.horario_medico.hora_fin }}</p>
+                    <p><strong>Médico:</strong> {{ cita.medico.usuario.nombres }} {{ cita.medico.usuario.apellidos }}</p>
+                    <p><strong>Especialidad:</strong> {{ cita.especialidad.nombre_especialidad }}</p>
+                    <p><strong>Estado:</strong> {{ cita.estado }}</p>
+                    <a href="{% url 'calificar_cita' cita.id %}">Calificar cita</a>
+                {% endfor %}
+            {% else %}
+                <p>No tienes citas finalizadas.</p>
+            {% endif %}
+        </div>
 
         <a href="{% url 'home' %}">Volver al inicio</a>
     </div>
 </body>
 </html>
+
+

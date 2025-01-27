@@ -102,12 +102,15 @@
         <h1>Agendar Cita</h1>
         <form method="POST">
             {% csrf_token %}
-            {{ form.as_p }}
+            {{ form.especialidad.label_tag }} {{ form.especialidad }}
+            {{ form.medico.label_tag }} {{ form.medico }}
+            {{ form.horario_medico.label_tag }} {{ form.horario_medico }}
             <div class="button-container">
                 <button type="submit">Agendar</button>
                 <button type="button" class="back-button" onclick="history.back();">Regresar</button>
             </div>
         </form>
+        
     </div>
 
     <script type="text/javascript">

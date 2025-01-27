@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Usuario, Paciente, Administrador, Especialidad, Medico, HorarioMedico, Agenda, Cita, HistorialClinico, Diagnostico, ExamenMedico, RecetaMedica, Secretaria, Calificacion, Estadisticas
+from .models import Usuario, Paciente, Administrador, Especialidad, Medico, HorarioMedico, Cita, HistorialClinico, Diagnostico, ExamenMedico, RecetaMedica, Secretaria, Calificacion, Estadisticas
 
 # Register your models here.
 admin.site.register(Paciente)
@@ -7,7 +7,6 @@ admin.site.register(Administrador)
 admin.site.register(Especialidad)
 admin.site.register(Medico)
 admin.site.register(HorarioMedico)
-admin.site.register(Agenda)
 admin.site.register(Cita)
 admin.site.register(HistorialClinico)
 admin.site.register(Diagnostico)

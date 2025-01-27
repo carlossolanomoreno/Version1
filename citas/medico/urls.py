@@ -16,18 +16,20 @@ Including another URLconf
 """
 from django.urls import path
 from . import views
-
+from .views import ver_historial
 urlpatterns = [
     # Página principal de médicos
     path('', views.home, name='home'),
     path('login/', views.login_medico, name='login_medico'),
     path('dashboard-medico/', views.dashboard_medico, name='dashboard_medico'),
     path('perfil/', views.perfil_medico, name='perfil_medico'),
-    path('agenda/', views.ver_agenda, name='ver_agenda'),
-    path('historial-clinico/', views.ver_historial_clinico, name='ver_historial_clinico'),
+    path('agenda/', views.agenda_medico, name='agenda_medico'),
+    path('actualizar-estado/<int:cita_id>/', views.actualizar_estado_cita, name='actualizar_estado_cita'),
     path('diagnostico/', views.generar_diagnostico, name='generar_diagnostico'),
     path('receta/', views.generar_receta, name='generar_receta'),
     path('examen/', views.solicitar_examen, name='solicitar_examen'),
+    path('ver-historial/<int:paciente_id>/', ver_historial, name='ver_historial'),
+    path('buscar-paciente/', views.buscar_paciente, name='buscar_paciente'),
 ]
 
 

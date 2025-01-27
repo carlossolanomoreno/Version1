@@ -16,9 +16,10 @@ from citas.forms import (
     PacienteForm,
     CitaForm,
 )
-from citas.models import Paciente, Cita, Usuario, Especialidad, Medico, HorarioMedico
+from citas.models import Paciente, Cita, Usuario, Especialidad, Medico, HorarioMedico, Calificacion
 from django.contrib.auth.views import PasswordChangeView
-from .forms import FotoPerfilForm  # Formulario para subir foto de perfil
+from django.utils import timezone
+
 
 
 # Función para generar contraseñas aleatorias
@@ -157,37 +158,34 @@ def dashboard_paciente(request):
         messages.error(request, "No se encuentra el paciente asociado.")
         return redirect('login_paciente')
 
-    # Obtener citas pendientes
+    # Obtener citas pendientes y finalizadas
     citas_pendientes = Cita.objects.filter(paciente=paciente, estado='pendiente')  # Ajusta el filtro según tu modelo
+    citas_finalizadas = Cita.objects.filter(paciente=paciente, estado='finalizada')  # Filtra las citas finalizadas
 
     if not citas_pendientes.exists():
-        messages.info(request, "No tienes citas para calificar.")
+        messages.info(request, "No tienes citas pendientes.")
+    
+    if not citas_finalizadas.exists():
+        messages.info(request, "No tienes citas finalizadas para calificar.")
 
     url_agendar_cita = reverse('agendar_cita')
+    
     return render(request, 'paciente/dashboard_paciente.html', {
         'paciente': paciente,
         'url_agendar_cita': url_agendar_cita,
-        'citas_pendientes': citas_pendientes  # Pasamos las citas al contexto
+        'citas_pendientes': citas_pendientes,  # Pasamos las citas pendientes al contexto
+        'citas_finalizadas': citas_finalizadas,  # Pasamos las citas finalizadas al contexto
     })
 
 
-# Vista para ver el perfil del paciente
+
 @login_required
 def perfil_paciente(request, paciente_id):
-    paciente = get_object_or_404(Paciente, id=paciente_id, usuario=request.user)
+    # Obtener el paciente basado en el usuario logueado
+    paciente = get_object_or_404(Paciente, usuario__id=paciente_id)
 
-    if request.method == 'POST':
-        form = FotoPerfilForm(request.POST, request.FILES, instance=paciente)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Tu foto de perfil se ha actualizado correctamente.')
-            return redirect('perfil_paciente', paciente_id=paciente.id)
-    else:
-        form = FotoPerfilForm(instance=paciente)
+    return render(request, 'paciente/perfil_paciente.html', {'paciente': paciente})
 
-    return render(request, 'paciente/perfil_paciente.html', {'paciente': paciente, 'form': form})
-
-# Vista para cambiar contraseña
 class CambiarContrasenaView(PasswordChangeView):
     template_name = 'paciente/cambiar_contrasena.html'
     success_url = reverse_lazy('dashboard_paciente')
@@ -196,36 +194,21 @@ class CambiarContrasenaView(PasswordChangeView):
         messages.success(self.request, 'Tu contraseña se ha cambiado correctamente.')
         return super().form_valid(form)
 
-#Actualizar foto de perfil
-def actualizar_foto_perfil(request, paciente_id):
-    paciente = get_object_or_404(Paciente, id=paciente_id)
-    if request.method == 'POST':
-        form = FotoPerfilForm(request.POST, request.FILES, instance=paciente)
-        if form.is_valid():
-            form.save()
-            return redirect('nombre_de_la_url')  # Redirigir a la página deseada
-    else:
-        form = FotoPerfilForm(instance=paciente)
-    return render(request, 'citas/paciente/actualizar_foto.html', {'form': form})
-
-
 
 # Vista para agendar citas
 
+@login_required
 def agendar_cita(request):
     if request.method == 'POST':
-        form = CitaForm(request.POST)
+        form = CitaForm(request.POST, request=request)  # Pasa el request al formulario
         if form.is_valid():
             form.save()
             return redirect('cita_agendada')  # Redirigir a una página de confirmación
     else:
-        form = CitaForm()
+        form = CitaForm(request=request)  # Pasa el request al formulario
 
     return render(request, 'paciente/agendar_cita.html', {'form': form})
 
-def cita_agendada(request):
-    cita = Cita.objects.filter(paciente=request.user.paciente).last() 
-    return render(request, 'paciente/cita_agendada.html', {'cita': cita})
 
 
 def cargar_medicos(request):
@@ -242,16 +225,33 @@ def cargar_horarios(request):
     medico_id = request.GET.get('medico_id')
     try:
         # Busca el médico correspondiente
-        medico = Medico.objects.get(id=medico_id)
+        medico = Usuario.objects.get(id=medico_id, tipo_usuario='Médico')
 
-        # Filtra horarios solo por el médico (sin el campo `estado`)
-        horarios = HorarioMedico.objects.filter(medico=medico)
+        # Filtra horarios solo por el médico y los tres meses
+        hoy = timezone.now()
+        # Establecer el primer día del mes actual
+        fecha_inicio = hoy.replace(day=1)  # Primer día del mes actual
+        # Establecer el primer día del cuarto mes
+        fecha_fin = (fecha_inicio.replace(month=fecha_inicio.month + 3) 
+             if fecha_inicio.month <= 9 
+             else fecha_inicio.replace(year=fecha_inicio.year + 1, month=(fecha_inicio.month + 3 - 12)))
 
-        # Genera los datos de respuesta
+
+        # Filtra los horarios para los tres meses
+        horarios = HorarioMedico.objects.filter(
+            medico=medico,
+            fecha__gte=fecha_inicio,
+            fecha__lt=fecha_fin
+        )
+
+        # Genera los datos de respuesta, incluyendo la fecha y el mes
         horario_data = [
             {
                 'id': horario.id,
                 'dia': horario.dia,
+                'fecha': horario.fecha.strftime('%d/%m/%Y'),  # Fecha completa (día/mes/año)
+                'mes': horario.fecha.strftime('%B'),  # Nombre del mes (por ejemplo, "Enero")
+                'ano': horario.fecha.strftime('%Y'),  # Año
                 'hora_inicio': horario.hora_inicio.strftime('%H:%M'),
                 'hora_fin': horario.hora_fin.strftime('%H:%M'),
             }
@@ -259,9 +259,32 @@ def cargar_horarios(request):
         ]
 
         return JsonResponse({'horarios': horario_data})
+
     except Medico.DoesNotExist:
         return JsonResponse({'error': 'Médico no encontrado'}, status=400)
+
+
+
     
+    
+@login_required
+def cita_agendada(request):
+    paciente = Paciente.objects.get(usuario=request.user)
+
+    # Obtener citas en estado 'pendiente' y 'finalizada'
+    citas_pendientes = Cita.objects.filter(paciente=paciente, estado='pendiente')
+    citas_finalizadas = Cita.objects.filter(paciente=paciente, estado='finalizada')
+
+    # Verificar si la cita está finalizada y si es posible calificar
+    if not citas_pendientes and not citas_finalizadas:
+        messages.info(request, "No tienes citas pendientes ni finalizadas.")
+        return redirect('dashboard_paciente')
+
+    return render(request, 'paciente/cita_agendada.html', {
+        'citas_pendientes': citas_pendientes,
+        'citas_finalizadas': citas_finalizadas
+    })
+
 
 
 
@@ -270,40 +293,25 @@ def cargar_horarios(request):
 @login_required
 def calificar_cita(request, cita_id):
     try:
-        paciente = Paciente.objects.get(usuario=request.user)
-    except Paciente.DoesNotExist:
-        messages.error(request, "No se encontró el paciente asociado.")
-        return redirect('listar_citas')
+        cita = Cita.objects.get(id=cita_id, paciente__usuario=request.user, estado='Finalizada')
+    except Cita.DoesNotExist:
+        messages.error(request, "Cita no encontrada o no disponible para calificación.")
+        return redirect('dashboard_paciente')
 
-    cita = get_object_or_404(Cita, id=cita_id, paciente=paciente)
     if request.method == 'POST':
         form = CalificarCitaForm(request.POST)
         if form.is_valid():
             calificacion = form.save(commit=False)
             calificacion.cita = cita
             calificacion.save()
-            messages.success(request, "Calificación registrada exitosamente.")
-            return redirect('listar_citas')
+            messages.success(request, "¡Cita calificada con éxito!")
+            return redirect('dashboard_paciente')
     else:
         form = CalificarCitaForm()
 
     return render(request, 'paciente/calificar_cita.html', {'form': form, 'cita': cita})
 
 
-# Vista para actualizar información del paciente
-@login_required
-def actualizar_informacion(request, paciente_id):
-    paciente = get_object_or_404(Paciente, id=paciente_id)
-    if request.method == 'POST':
-        form = PacienteForm(request.POST, instance=paciente)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Información actualizada exitosamente.")
-            return redirect('perfil_paciente', paciente_id=paciente.id)
-    else:
-        form = PacienteForm(instance=paciente)
-
-    return render(request, 'paciente/actualizar_informacion.html', {'form': form})
 
 
 

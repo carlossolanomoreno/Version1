@@ -1,14 +1,97 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Calificar Cita</title>
-</head>
-<body>
-    <h1>Calificar Cita</h1>
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Enviar</button>
-    </form>
-</body>
-</html>
+<form method="post" class="form-calificar">
+    {% csrf_token %}
+    <label for="calificacion">Calificación:</label>
+    <select name="calificacion" id="calificacion">
+        <option value="" disabled selected>Seleccione una opción</option>
+        {% for key, value in form.calificacion.field.choices %}
+            <option value="{{ key }}" {% if form.calificacion.value == key %}selected{% endif %}>{{ value }}</option>
+        {% endfor %}
+    </select>
+    
+    <label for="comentario">Comentario:</label>
+    <textarea name="comentario" id="comentario" rows="4">{{ form.comentario.value }}</textarea>
+    
+    <div class="form-buttons">
+        <button type="submit" class="btn-submit">Enviar</button>
+        <a href="{% url 'dashboard_paciente' %}" class="btn-back">Regresar</a>
+    </div>
+</form>
+
+
+<style>
+    /* General form styles */
+    .form-calificar {
+        background-color: #fff;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+        margin: 2rem auto;
+        font-family: 'Arial', sans-serif;
+    }
+
+    .form-calificar label {
+        display: block;
+        font-size: 1rem;
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-calificar select,
+    .form-calificar textarea {
+        width: 100%;
+        padding: 0.8rem;
+        margin-bottom: 1.2rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 1rem;
+        color: #333;
+        transition: border-color 0.3s ease;
+    }
+
+    .form-calificar select:focus,
+    .form-calificar textarea:focus {
+        border-color: #0078d7;
+        outline: none;
+    }
+
+    .form-calificar .form-buttons {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    /* Submit Button */
+    .btn-submit {
+        background-color: #28a745; /* Verde */
+        color: white;
+        border: none;
+        padding: 0.8rem 2rem;
+        font-size: 1.1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .btn-submit:hover {
+        background-color: #218838; /* Verde más oscuro */
+        transform: translateY(-2px);
+    }
+
+    /* Back Button */
+    .btn-back {
+        background-color: #0078d7; /* Azul vibrante */
+        color: white;
+        text-decoration: none;
+        padding: 0.8rem 2rem;
+        font-size: 1.1rem;
+        border-radius: 4px;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .btn-back:hover {
+        background-color: #0056a6; /* Azul oscuro */
+        transform: translateY(-2px);
+    }
+</style>
+

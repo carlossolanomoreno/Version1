@@ -10,7 +10,6 @@ from .views import (
 
 urlpatterns = [
     
-    path('inicio/', views.inicio, name='inicio'),
     # URL para registrar administrador
     path('registrar/', registrar_administrador_view, name='registro_administrador'),
     
@@ -38,20 +37,16 @@ urlpatterns = [
     # API para estadísticas del dashboard
     path('api/dashboard-estadisticas/', EstadisticasDashboardAPIView.as_view(), name='api_dashboard_estadisticas'),
     
-    
     # API para exportar reportes
     path('api/exportar-reporte/<str:formato>/', ExportarReporteAPIView.as_view(), name='api_exportar_reporte'),
     
-  
-    
-
-   # Vista principal para gestionar las citas
-
-
     # Vista para agendar la cita
     path('agendar_citas/', views.agendar_citas, name='agendar_citas'),
-    path('cargar_medicos/', views.cargar_medicos, name='cargar_medicos'),
     path('cita_agendada/', views.cita_agendada, name='cita_agendada'),
+    path('listar_citas/', views.listar_citas, name='listar_citas'),
+    path('cargar_medicos/', views.cargar_medicos, name='cargar_medicos'),
+    path('cargar-horarios/', views.cargar_horarios, name='cargar_horarios'),
+
 
 ]
 

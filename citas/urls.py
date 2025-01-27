@@ -35,7 +35,10 @@ urlpatterns = [
 
     # Rutas específicas de médicos
     path('medico/', include('citas.medico.urls')),
-
+    
+    
+    # Rutas específicas de secretaria
+    path('secretaria/', include('citas.secretaria.urls')),
 
 
     # Logout para cualquier tipo de usuario

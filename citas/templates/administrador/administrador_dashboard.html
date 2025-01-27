@@ -1,13 +1,11 @@
-{% extends 'base.html' %}
 
 {% block content %}
 <div class="dashboard-header">
     <div class="dashboard-navbar">
-        <a href="{% url 'inicio' %}" class="btn btn-primary">Regresar al Inicio</a>
-        <a href="{% url 'user_logout' %}" class="btn btn-danger">Cerrar Sesión</a>
+        <a href="{% url 'login_admin' %}" class="btn btn-primary">Regresar</a>
     </div>
 
-    <h1>Bienvenido al Dashboard del Administrador</h1>
+    <h1 class="dashboard-title">Bienvenido al Dashboard del Administrador</h1>
 
     <!-- Mensajes de error -->
     {% if messages %}
@@ -20,24 +18,22 @@
 
     <!-- Sección de Estadísticas -->
     <div class="dashboard-stats">
-        <h2>Estadísticas Generales</h2>
+        <h2 class="section-title">Estadísticas Generales</h2>
         <p><strong>Total de Pacientes:</strong> {{ total_pacientes }}</p>
         <p><strong>Total de Citas Pendientes:</strong> {{ citas_pendientes }}</p>
         <p><strong>Total de Citas Finalizadas:</strong> {{ citas_finalizadas }}</p>
+        <p><strong>Total de Citas Canceladas:</strong> {{ citas_canceladas }}</p>
         <p><strong>Promedio de Calificaciones:</strong> {{ promedio_calificacion }}</p>
     </div>
 
     <!-- Exportar Estadísticas -->
     <div class="export-stats">
-        <h3>Exportar Estadísticas</h3>
-        <form method="post" action="{% url 'exportar_estadisticas' %}">
-            {% csrf_token %}
+        <h3 class="section-title">Exportar Estadísticas</h3>
+        <form method="get" action="{% url 'exportar_estadisticas' %}">
             <label for="formato">Formato:</label>
             <select name="formato" id="formato" required>
                 <option value="csv">CSV</option>
                 <option value="xls">Excel</option>
-                <option value="xml">XML</option>
-                <option value="pdf">PDF</option>
             </select>
             <button type="submit" class="btn btn-success">Exportar</button>
         </form>
@@ -45,18 +41,135 @@
 
     <!-- Sección de Acciones Administrativas -->
     <div class="dashboard-actions">
-        <h2>Acciones Administrativas</h2>
+        <h2 class="section-title">Acciones Administrativas</h2>
         <ul>
-            <li><a href="{% url 'generar_reporte' %}">Generar Reporte Estadístico</a></li>
-            <li><a href="{% url 'agendar_citas' %}">Agendar Citas Médicas</a></li>
-            <li><a href="{% url 'registrar_paciente_admin' %}">Registrar Paciente</a></li>
-            <li><a href="{% url 'registro_medico_admin' %}">Registrar Médico</a></li>
-            <li><a href="{% url 'registrar_secretaria_admin' %}">Registrar Secretaria</a></li>
-            
+            <li><a href="{% url 'generar_reporte' %}" class="action-link">Generar Reporte Estadístico</a></li>
+            <li><a href="{% url 'agendar_citas' %}" class="action-link">Agendar Citas Médicas</a></li>
+            <li><a href="{% url 'listar_citas' %}" class="action-link">Listar Citas Médicas</a></li>
+            <li><a href="{% url 'registrar_paciente_admin' %}" class="action-link">Registrar Paciente</a></li>
+            <li><a href="{% url 'registro_medico_admin' %}" class="action-link">Registrar Médico</a></li>
+            <li><a href="{% url 'registrar_secretaria_admin' %}" class="action-link">Registrar Secretaria</a></li>
         </ul>
     </div>
 </div>
+
+
+
+
+<style>
+    .dashboard-header {
+        background-color: #f0f2f5;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .dashboard-title {
+        color: #0056b3;
+        text-align: center;
+        font-size: 28px;
+        margin-bottom: 20px;
+    }
+
+    .section-title {
+        color: #333;
+        font-size: 22px;
+        margin-bottom: 10px;
+    }
+
+    .dashboard-navbar a {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 5px;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .dashboard-navbar a:hover {
+        background-color: #0056b3;
+    }
+
+    .messages .message {
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 5px;
+    }
+
+    .messages .message.success {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .messages .message.error {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .dashboard-stats p {
+        font-size: 18px;
+        margin: 5px 0;
+    }
+
+    .export-stats {
+        background-color: #ffffff;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-top: 30px;
+    }
+
+    .export-stats select {
+        padding: 8px;
+        margin-right: 10px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-success:hover {
+        background-color: #218838;
+    }
+
+    .dashboard-actions ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .dashboard-actions li {
+        margin: 10px 0;
+    }
+
+    .action-link {
+        color: #007bff;
+        text-decoration: none;
+    }
+
+    .action-link:hover {
+        color: #0056b3;
+        text-decoration: underline;
+    }
+</style>
+
 {% endblock %}
+
 
 
 

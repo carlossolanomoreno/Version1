@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial Clínico del Paciente</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        h1 {
+            color: #0056b3;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group input {
+            padding: 10px;
+            width: 100%;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .form-group button {
+            padding: 10px 15px;
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .form-group button:hover {
+            background-color: #003c82;
+        }
+
+        .patient-info {
+            margin-top: 20px;
+        }
+
+        .patient-info h2 {
+            color: #0056b3;
+        }
+
+        .patient-info ul {
+            list-style-type: none;
+            padding: 0;
+            text-align: left;
+        }
+
+        .patient-info ul li {
+            margin-bottom: 10px;
+        }
+
+        .info-message {
+            color: #28a745;
+            margin-top: 15px;
+        }
+
+        .error-message {
+            color: #dc3545;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Buscar Paciente por Cédula</h1>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <input type="text" name="cedula" placeholder="Ingrese el número de cédula" required>
+        </div>
+        <div class="form-group">
+            <button type="submit">Buscar</button>
+        </div>
+    </form>
+
+    {% if paciente %}
+        <div class="patient-info">
+            <h2>Información del Paciente</h2>
+            <ul>
+                <li><strong>Nombre:</strong> {{ paciente.nombres }} {{ paciente.apellidos }}</li>
+                <li><strong>Cédula:</strong> {{ paciente.cedula }}</li>
+            </ul>
+
+            {% if diagnosticos %}
+                <h3>Diagnósticos</h3>
+                <ul>
+                    {% for diagnostico in diagnosticos %}
+                        <li>{{ diagnostico.descripcion }} - Fecha: {{ diagnostico.fecha }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No hay diagnósticos disponibles para este paciente.</p>
+            {% endif %}
+
+            {% if recetas %}
+                <h3>Recetas</h3>
+                <ul>
+                    {% for receta in recetas %}
+                        <li>{{ receta.descripcion }} - Fecha: {{ receta.fecha }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No hay recetas disponibles para este paciente.</p>
+            {% endif %}
+
+            {% if examenes %}
+                <h3>Exámenes</h3>
+                <ul>
+                    {% for examen in examenes %}
+                        <li>{{ examen.descripcion }} - Fecha: {{ examen.fecha }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No hay exámenes disponibles para este paciente.</p>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    {% if messages %}
+        <div class="info-message">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+
+</body>
+</html>
+
+
+
+
+

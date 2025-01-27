@@ -36,6 +36,10 @@
             padding: 0;
             text-align: left;
         }
+        h3 {
+            font-size: 1.2rem; /* Tamaño pequeño */
+            margin-bottom: 10px; /* Espaciado */
+        }
 
         li {
             margin-bottom: 15px;
@@ -64,22 +68,102 @@
         .btn-back:hover {
             background-color: #003c82;
         }
+
+        .search-form input {
+            padding: 10px;
+            margin: 10px 0;
+            width: 80%;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .search-form button {
+            padding: 10px 20px;
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .search-form button:hover {
+            background-color: #003c82;
+        }
     </style>
 </head>
 <body>
+
+    {% block content %}
     <div class="dashboard-container">
         <h1>Dashboard Médico</h1>
+    
+        <!-- Formulario para buscar por cédula -->
+        <div class="search-form">
+            <h3>Buscar historial clínico</h3> <!-- Título pequeño -->
+            <form method="get" action="{% url 'buscar_paciente' %}">
+                <input type="text" name="cedula" placeholder="Ingresa la cédula del paciente" required>
+                <button type="submit">Buscar</button>
+            </form>
+        </div>
+    
+        {% if paciente %}
+            <h2>Historial Clínico de {{ paciente.usuario.nombres }} {{ paciente.usuario.apellidos }}</h2> <!-- Nombre completo del paciente -->
+            {% if historial %}
+                <ul>
+                    <li><strong>Diagnóstico:</strong>
+                        {% if historial.diagnosticos.exists %}
+                            <ul>
+                                {% for diagnostico in historial.diagnosticos.all %}
+                                <li>{{ diagnostico.nombre }} - {{ diagnostico.descripcion }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>No hay diagnósticos registrados.</p>
+                        {% endif %}
+                    </li>
+                    
+                    <li><strong>Receta Médica:</strong>
+                        {% if historial.recetas.exists %}
+                            <ul>
+                                {% for receta in historial.recetas.all %}
+                                    <li>{{ receta.detalles }}</li> <!-- Asumí que el modelo RecetaMedica tiene un campo 'detalles' -->
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>No hay recetas médicas registradas.</p>
+                        {% endif %}
+                    </li>
+                    
+                    <li><strong>Examen Médico:</strong>
+                        {% if historial.examenes.exists %}
+                            <ul>
+                                {% for examen in historial.examenes.all %}
+                                    <li>{{ examen.descripcion }}</li> 
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>No hay exámenes médicos registrados.</p>
+                        {% endif %}
+                    </li>
+                </ul>
+            {% else %}
+                <p>No se encontraron datos en el historial clínico de este paciente.</p>
+            {% endif %}
+        {% else %}
+            <p>Paciente no encontrado.</p>
+        {% endif %}
+    
         <ul>
             <li><a href="{% url 'perfil_medico' %}">Perfil</a></li>
-            <li><a href="{% url 'ver_agenda' %}">Ver Agenda</a></li>
-            <li><a href="{% url 'ver_historial_clinico' %}">Historial Clínico</a></li>
             <li><a href="{% url 'generar_diagnostico' %}">Generar Diagnóstico</a></li>
             <li><a href="{% url 'generar_receta' %}">Generar Receta</a></li>
             <li><a href="{% url 'solicitar_examen' %}">Solicitar Examen Médico</a></li>
+            <li><a href="{% url 'agenda_medico' %}">Agenda de Citas</a></li>
             <li><a href="{% url 'login_medico' %}">Cerrar Sesión</a></li>
         </ul>
-        <a href="{% url 'login_medico' %}" class="btn-back">Regresar a Login Médico</a>
     </div>
-</body>
+    {% endblock %}
+    
+    </body>
+    
 </html>
-

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi Perfil</title>
     <style>
-        /* General body styling */
+        /* Estilos generales */
         body {
             font-family: Arial, sans-serif;
             background-color: #f7f9fc;
@@ -18,7 +18,7 @@
             height: 100vh;
         }
 
-        /* Centered container */
+        /* Contenedor principal */
         .container {
             background: #ffffff;
             padding: 20px 30px;
@@ -28,7 +28,7 @@
             max-width: 400px;
         }
 
-        /* Header */
+        /* Encabezados */
         h1 {
             text-align: center;
             font-size: 24px;
@@ -42,11 +42,24 @@
             margin-bottom: 10px;
         }
 
-        /* Form styling */
+        /* Estilos del formulario */
         form {
             display: flex;
             flex-direction: column;
+            gap: 15px;
             margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #0056b3;
+        }
+
+        input[type="file"] {
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
         }
 
         button[type="submit"] {
@@ -57,14 +70,13 @@
             border-radius: 5px;
             font-size: 16px;
             cursor: pointer;
-            margin-top: 10px;
         }
 
         button[type="submit"]:hover {
             background-color: #004494;
         }
 
-        /* List styling */
+        /* Lista de enlaces */
         ul {
             list-style: none;
             padding: 0;
@@ -85,7 +97,7 @@
             text-decoration: underline;
         }
 
-        /* Back to dashboard link */
+        /* Enlace de regresar */
         .back-link {
             display: inline-block;
             margin-top: 20px;
@@ -102,23 +114,24 @@
 </head>
 <body>
     <div class="container">
-        <h1>Perfil de {{ paciente.usuario.get_full_name }}</h1>
+        <h1>Perfil de Paciente {{ paciente.usuario.get_full_name }}</h1>
 
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit">Actualizar foto de perfil</button>
         </form>
 
         <h2>Opciones</h2>
         <ul>
             <li><a href="{% url 'cambiar_contrasena' %}">Cambiar contraseña</a></li>
-            <li><a href="{% url 'user_logout' %}">Cerrar sesión</a></li>
+            <!-- Redirección personalizada al cerrar sesión -->
+            <li><a href="http://127.0.0.1:8000/">Cerrar sesión</a></li>
         </ul>
 
         <a href="{% url 'dashboard_paciente' %}" class="back-link">Volver al Dashboard</a>
     </div>
 </body>
 </html>
+
 
 

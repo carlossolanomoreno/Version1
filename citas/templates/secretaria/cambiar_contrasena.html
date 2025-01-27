@@ -1,0 +1,94 @@
+{% block content %}
+  <div class="change-password-container">
+    <h2>Cambiar Contraseña</h2>
+
+    <form method="post" class="change-password-form">
+      {% csrf_token %}
+      {{ form.as_p }} <!-- Muestra el formulario -->
+      <button type="submit" class="submit-button">Cambiar Contraseña</button>
+    </form>
+
+    <div class="profile-link">
+      <a href="{% url 'secretaria:perfil_secretaria' id=request.user.id %}" class="profile-link">Ver perfil</a>
+    </div>
+  </div>
+{% endblock %}
+
+<style>
+  /* General */
+  body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f6f9; /* Fondo suave */
+    color: #333;
+    margin: 0;
+    padding: 0;
+  }
+
+  .change-password-container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  h2 {
+    font-size: 2rem;
+    color: #2980b9; /* Azul para el título */
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  /* Formulario */
+  .change-password-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .change-password-form input {
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    transition: border-color 0.3s ease;
+  }
+
+  .change-password-form input:focus {
+    border-color: #2980b9; /* Azul en foco */
+    outline: none;
+  }
+
+  .submit-button {
+    background-color: #3498db; /* Azul claro */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+
+  .submit-button:hover {
+    background-color: #2980b9; /* Azul más oscuro */
+    transform: translateY(-2px); /* Efecto de desplazamiento */
+  }
+
+  /* Enlace al perfil */
+  .profile-link {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    font-size: 1rem;
+    color: #2980b9;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .profile-link:hover {
+    color: #1d6fa5; /* Azul más oscuro en hover */
+  }
+</style>

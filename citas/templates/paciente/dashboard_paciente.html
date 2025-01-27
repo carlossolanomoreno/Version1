@@ -1,89 +1,10 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard del Paciente</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f9;
-        }
-
-        header {
-            background-color: #007bff;
-            color: white;
-            padding: 1rem;
-            text-align: center;
-        }
-
-        nav {
-            background-color: #333;
-            color: white;
-            padding: 0.5rem;
-            display: flex;
-            justify-content: space-around;
-        }
-
-        nav a {
-            color: white;
-            text-decoration: none;
-            padding: 0.5rem 1rem;
-        }
-
-        nav a:hover {
-            background-color: #555;
-        }
-
-        main {
-            padding: 2rem;
-        }
-
-        .card {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            margin-bottom: 1rem;
-            padding: 1rem;
-        }
-
-        footer {
-            text-align: center;
-            padding: 1rem;
-            background-color: #333;
-            color: white;
-            margin-top: 2rem;
-        }
-
-        .sub-menu {
-            margin-top: 1rem;
-            padding-left: 2rem;
-        }
-
-        .sub-menu a {
-            display: block;
-            color: #007bff;
-            text-decoration: none;
-            margin-bottom: 0.5rem;
-        }
-
-        .sub-menu a:hover {
-            text-decoration: underline;
-        }
-    </style>
-</head>
-<body>
-
-<header>
-    <h1>Bienvenido, {{ paciente.nombres }} {{ paciente.apellidos }}</h1>
+<header> 
+    <h1>Bienvenido, {{ paciente.usuario.nombres }} {{ paciente.usuario.apellidos }}</h1>
 </header>
 
 <nav>
-    <a href="{% url 'dashboard_paciente' %}">Inicio</a>
-    <a href="{{ url_agendar_cita }}">Agendar una cita</a>
-    <a href="{% url 'perfil_paciente' paciente.id %}">Mi Perfil</a>
+    <a href="{% url 'agendar_cita' %}">Agendar una cita</a>
+    <a href="{% url 'perfil_paciente' paciente.usuario.id %}">Mi Perfil</a>
 </nav>
 
 <main>
@@ -94,27 +15,156 @@
 
     {% if citas_pendientes %}
         <div class="card">
-            <h3>Calificar citas pendientes</h3>
+            <h3>Tus citas pendientes</h3>
             {% for cita in citas_pendientes %}
-                <div>
-                    <p>Cita con: {{ cita.doctor }}</p>
-                    <p>Fecha: {{ cita.fecha }}</p>
-                    <a href="{% url 'calificar_cita' cita_id=cita.id %}">Calificar esta cita</a>
-                </div>
+                <p><strong>Fecha:</strong> {{ cita.horario_medico.dia }}</p>
+                <p><strong>Hora:</strong> {{ cita.horario_medico.hora_inicio }} - {{ cita.horario_medico.hora_fin }}</p>
+                <p><strong>Médico:</strong> {{ cita.medico.usuario.nombres }} {{ cita.medico.usuario.apellidos }}</p>
+                <p><strong>Especialidad:</strong> {{ cita.especialidad.nombre_especialidad }}</p>
+                <p><strong>Estado:</strong> {{ cita.estado }}</p>
             {% endfor %}
         </div>
     {% else %}
         <div class="card">
-            <p>No tienes citas pendientes para calificar.</p>
+            <h3>No tienes citas pendientes</h3>
+            <p>Agenda una cita para ver los detalles aquí.</p>
+        </div>
+    {% endif %}
+
+    {% if citas_finalizadas %}
+        <div class="card">
+            <h3>Tus citas finalizadas</h3>
+            {% for cita in citas_finalizadas %}
+                <p><strong>Fecha:</strong> {{ cita.horario_medico.dia }}</p>
+                <p><strong>Hora:</strong> {{ cita.horario_medico.hora_inicio }} - {{ cita.horario_medico.hora_fin }}</p>
+                <p><strong>Médico:</strong> {{ cita.medico.usuario.nombres }} {{ cita.medico.usuario.apellidos }}</p>
+                <p><strong>Especialidad:</strong> {{ cita.especialidad.nombre_especialidad }}</p>
+                <p><strong>Estado:</strong> {{ cita.estado }}</p>
+
+                <!-- Enlace para calificar la cita solo si está finalizada -->
+                <a href="{% url 'calificar_cita' cita.id %}" class="calificar-cita-btn">Calificar cita</a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card">
+            <h3>No tienes citas finalizadas</h3>
+            <p>Una vez finalices tu cita, podrás calificarla aquí.</p>
         </div>
     {% endif %}
 </main>
 
-<footer>
-    <p>&copy; 2025 Sistema de Citas Médicas</p>
-</footer>
+<style>
+    /* General */
+    body {
+        font-family: 'Arial', sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f7f9fc;
+        color: #333;
+    }
 
-</body>
-</html>
+    /* Header */
+    header {
+        background-color: #0078d7; /* Azul vibrante */
+        color: white;
+        padding: 1.5rem 1rem;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
 
+    header h1 {
+        font-size: 1.8rem;
+        margin: 0;
+    }
 
+    /* Navigation Bar */
+    nav {
+        background-color: #0056a6; /* Azul oscuro */
+        display: flex;
+        justify-content: center;
+        padding: 1rem 0;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    nav a {
+        color: white;
+        text-decoration: none;
+        font-size: 1rem;
+        padding: 0.5rem 1rem;
+        margin: 0 0.5rem;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+    }
+
+    nav a:hover {
+        background-color: #0078d7; /* Azul vibrante */
+        color: white;
+    }
+
+    /* Main Content */
+    main {
+        padding: 2rem;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .card h3 {
+        font-size: 1.4rem;
+        color: #0078d7;
+        margin-bottom: 0.5rem;
+    }
+
+    .card p {
+        font-size: 1rem;
+        line-height: 1.6;
+        color: #555;
+    }
+
+    /* Botón para calificar cita */
+    .calificar-cita-btn {
+        display: inline-block;
+        background-color: #28a745; /* Verde */
+        color: white;
+        text-decoration: none;
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+        border-radius: 4px;
+        margin-top: 0.5rem;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .calificar-cita-btn:hover {
+        background-color: #218838; /* Verde más oscuro */
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Footer */
+    footer {
+        background-color: #333;
+        color: white;
+        text-align: center;
+        padding: 1rem;
+        margin-top: 2rem;
+    }
+
+    footer p {
+        font-size: 0.9rem;
+        margin: 0;
+    }
+</style>
